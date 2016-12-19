@@ -219,7 +219,7 @@ result1.status # => :created
 result1.resource
 # => {
 #      'title' => 'My First Post'
-#      'body' => 'Hello everyone, this is my first post!a'
+#      'body' => 'Hello everyone, this is my first post!'
 #    }
 
 result2 = API::V1::Post::Operation::Create.call(
