@@ -78,6 +78,15 @@ module Pragma
         context.params
       end
 
+      def respond_with(status:, resource:)
+        context.status = status
+        context.resource = resource
+      end
+
+      def head(status)
+        context.status = status
+      end
+
       private
 
       def setup_context
