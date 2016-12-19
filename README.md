@@ -58,7 +58,7 @@ result.status # => :ok
 result.resource # => { pong: 'HELLO' }
 ```
 
-As you can see, an operation takes parameters as an input and returns:
+As you can see, an operation takes parameters as input and responds with:
 
 - an HTTP status code;
 - (optional) a resource (i.e. an object implementing `#to_json`).
