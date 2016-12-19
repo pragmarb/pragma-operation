@@ -122,7 +122,7 @@ result2 = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
 result2.success? # => true
 ```
 
-### Halting execution
+### Halting the execution
 
 Both `#respond_with` and `#head` provide bang counterparts that halt the execution of the operation.
 They are useful, for instance, in before callbacks.
