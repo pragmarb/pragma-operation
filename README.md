@@ -81,10 +81,14 @@ module API
 end
 ```
 
+Since Pragma::Operation is built on top of [Interactor](https://github.com/collectiveidea/interactor),
+you should consult its documentation for the basic usage of operations; the rest of this section
+only covers the features provided specifically by Pragma::Contract.
+
 ### Handling errors
 
-You can use the `#success?` method to check whether an operation was successful. An operation is
-considered successful when it returns a 2xx or 3xx status code:
+You can use the `#success?` and `#failure?` method to check whether an operation was successful. An
+operation is considered successful when it returns a 2xx or 3xx status code:
 
 ```ruby
 module API
@@ -171,11 +175,93 @@ result2 = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
 result2.success? # => true
 ```
 
+### Authorizing operations
+
+Operations integrate with [Pragma::Policy](https://github.com/pragmarb/pragma-policy), when
+available. All you have to do is specify the policy class with `#policy`:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          policy API::V1::Post::Policy
+
+          def call
+            post = Post.new(params)
+            authorize! post
+
+            post.save!
+
+            respond_with status: :created, resource: post
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+Of course, you will now have to pass the user performing the operation in addition to the usual
+parameters:
+
+```ruby
+result1 = API::V1::Post::Operation::Create.call(
+  params: {
+    title: 'My First Post',
+    body: 'Hello everyone, this is my first post!'
+  },
+  current_user: authorized_user
+)
+
+result1.status # => :created
+result1.resource # => { 'title' => 'My First Post', 'body' => 'Hello everyone, this is my first post!' }
+
+result2 = API::V1::Post::Operation::Create.call(
+  params: {
+    title: 'My First Post',
+    body: 'Hello everyone, this is my first post!'
+  },
+  current_user: unauthorized_user
+)
+
+result2.status # => :forbidden
+result2.resource # => { 'error_type' => 'forbidden', 'error_message' => 'You are not authorized to perform this operation.' }
+```
+
+If you want to customize how you handle authorization, you can use the non-bang version `#authorize`:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          policy API::V1::Post::Policy
+
+          def call
+            post = Post.new(params)
+
+            unless authorize(post)
+              respond_with!(
+                status: :forbidden,
+                resource: nil # if you don't need for error info
+              )
+            end
+
+            post.save!
+
+            respond_with status: :created, resource: post
+          end
+        end
+      end
+    end
+  end
+end
+```
+
 ### Validating records
-
-...
-
-### Authorizing records
 
 ...
 
