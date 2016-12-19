@@ -97,7 +97,7 @@ end
 
 Since Pragma::Operation is built on top of [Interactor](https://github.com/collectiveidea/interactor),
 you should consult its documentation for the basic usage of operations; the rest of this section
-only covers the features provided specifically by Pragma::Contract.
+only covers the features provided specifically by Pragma::Operation.
 
 ### Handling errors
 
