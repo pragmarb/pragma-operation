@@ -1,4 +1,4 @@
-# Pragma::Policy
+# Pragma::Operation
 
 [![Build Status](https://img.shields.io/travis/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://travis-ci.org/pragmarb/pragma-operation)
 [![Dependency Status](https://img.shields.io/gemnasium/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://gemnasium.com/github.com/pragmarb/pragma-operation)
