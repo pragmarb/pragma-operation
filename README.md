@@ -238,7 +238,8 @@ result2.resource
 #    }
 ```
 
-If you want to customize how you handle authorization, you can use the non-bang version `#authorize`:
+If you want to customize how you handle authorization, you can use the non-bang version
+`#authorize`:
 
 ```ruby
 module API
