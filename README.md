@@ -179,8 +179,9 @@ result2.success? # => true
 
 ### Pragma::Contract
 
-Operations also integrate with [Pragma::Contract](https://github.com/pragmarb/pragma-contract). Just
-like for policies, you can specify the contract to use with `#contract`:
+Operations integrate with [Pragma::Contract](https://github.com/pragmarb/pragma-contract). You can
+specify the contract to use with `#contract` and get access to `#validate` and `#validate!` in your
+operations:
 
 ```ruby
 module API
@@ -192,7 +193,6 @@ module API
 
           def call
             post = Post.new
-            contract = build_contract(post)
 
             validate! contract
             contract.save
@@ -272,8 +272,9 @@ end
 
 ### Pragma::Policy
 
-Operations integrate with [Pragma::Policy](https://github.com/pragmarb/pragma-policy), when
-available. All you have to do is specify the policy class with `#policy`:
+Operations integrate with [Pragma::Policy](https://github.com/pragmarb/pragma-policy). All you have
+to do is specify the policy class with `#policy`. This will give you access to `#authorize` and
+`#authorize!`:
 
 ```ruby
 module API
@@ -333,8 +334,7 @@ result2.resource
 #    }
 ```
 
-If you want to customize how you handle authorization, you can use the non-bang version
-`#authorize`:
+If you want to customize how you handle authorization, you can use the non-bang method `#authorize`:
 
 ```ruby
 module API
@@ -350,7 +350,7 @@ module API
             unless authorize(post)
               respond_with!(
                 status: :forbidden,
-                resource: nil # if you don't need for error info
+                resource: nil # if you don't need error info
               )
             end
 
