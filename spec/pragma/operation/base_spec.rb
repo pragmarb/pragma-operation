@@ -82,6 +82,34 @@ RSpec.describe Pragma::Operation::Base do
     end
   end
 
+  describe '#head!' do
+    let(:operation) do
+      Class.new(described_class) do
+        before :validate_params
+
+        def call
+          respond_with(
+            status: 200,
+            resource: { pong: params[:pong] }
+          )
+        end
+
+        private
+
+        def validate_params
+          return unless params[:pong].empty?
+          head! :unprocessable_entity
+        end
+      end
+    end
+
+    let(:params) { { pong: '' } }
+
+    it 'halts the execution' do
+      expect(context.status).to eq(:unprocessable_entity)
+    end
+  end
+
   describe '#success?' do
     context 'when the HTTP status code is successful' do
       it 'returns true' do
