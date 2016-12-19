@@ -122,6 +122,55 @@ result2 = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
 result2.success? # => true
 ```
 
+### Halting execution
+
+Both `#respond_with` and `#head` provide bang counterparts that halt the execution of the operation.
+They are useful, for instance, in before callbacks.
+
+The above operation can be rewritten like this:
+
+```ruby
+module API
+  module V1
+    module Ping
+      module Operation
+        class Create < Pragma::Operation::Base
+          before :validate_params
+
+          def call
+            respond_with status: :ok, resource: { pong: params[:pong] }
+          end
+
+          private
+
+          def validate_params
+            if params[:pong].blank?
+              respond_with!(
+                status: :unprocessable_entity,
+                resource: {
+                  error_type: :missing_pong,
+                  error_message: "You must provide a 'pong' parameter."
+                }
+              )
+            end
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+The result is identical:
+
+```ruby
+result1 = API::V1::Ping::Operation::Create.call(params: { pong: '' })
+result1.success? # => false
+
+result2 = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
+result2.success? # => true
+```
+
 ### Validating records
 
 ...

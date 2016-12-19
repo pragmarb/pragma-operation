@@ -67,6 +67,8 @@ module Pragma
 
       before :setup_context
 
+      around :handle_halt
+
       after :set_default_status
       after :validate_status
       after :consolidate_status
@@ -83,14 +85,29 @@ module Pragma
         context.resource = resource
       end
 
+      def respond_with!(status:, resource:)
+        respond_with status: status, resource: resource
+        fail Halt
+      end
+
       def head(status)
         context.status = status
+      end
+
+      def head!(status)
+        head status
+        fail Halt
       end
 
       private
 
       def setup_context
         context.params ||= {}
+      end
+
+      def handle_halt(interactor)
+        interactor.call
+      rescue Halt
       end
 
       def set_default_status
@@ -124,6 +141,8 @@ module Pragma
           super "'#{status}' is not a valid HTTP status code."
         end
       end
+
+      Halt = StandardError
     end
   end
 end
