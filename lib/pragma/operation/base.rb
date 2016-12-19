@@ -67,14 +67,18 @@ module Pragma
         511 => :network_authentication_required
       }.freeze
 
-      before :setup_context
+      def self.inherited(child)
+        child.class_eval do
+          before :setup_context
 
-      around :handle_halt
+          around :handle_halt
 
-      after :set_default_status
-      after :validate_status
-      after :consolidate_status
-      after :mark_result
+          after :mark_result
+          after :consolidate_status
+          after :validate_status
+          after :set_default_status
+        end
+      end
 
       # Runs the operation.
       def call
@@ -173,23 +177,42 @@ module Pragma
       end
 
       def mark_result
-        return if /\A(2|3)\d{2}\z/ =~ STATUSES.invert[context.status]
+        return if /\A(2|3)\d{2}\z/ =~ STATUSES.invert[context.status].to_s
         context.fail!
       end
 
-      # This error is raised when an invalid status is set for an operation.
-      #
-      # @author Alessandro Desantis
-      class InvalidStatusError < StandardError
-        # Initializes the error.
-        #
-        # @param [Integer|Symbol] an invalid HTTP status code
-        def initialize(status)
-          super "'#{status}' is not a valid HTTP status code."
+      def with_hooks
+        # This overrides the default behavior, which is not to run after hooks if an exception is
+        # raised either in +#call+ or one of the before hooks. See:
+        # https://github.com/collectiveidea/interactor/blob/master/lib/interactor/hooks.rb#L210)
+        run_around_hooks do
+          begin
+            run_before_hooks
+            yield
+          ensure
+            run_after_hooks
+          end
         end
       end
+    end
 
-      Halt = StandardError
+    # This error is raised when an invalid status is set for an operation.
+    #
+    # @author Alessandro Desantis
+    class InvalidStatusError < StandardError
+      # Initializes the error.
+      #
+      # @param [Integer|Symbol] an invalid HTTP status code
+      def initialize(status)
+        super "'#{status}' is not a valid HTTP status code."
+      end
+    end
+
+    # This error is raised when the operation's execution should be stopped. It is silently
+    # rescued by the operation.
+    #
+    # @author Alessandro Desantis
+    class Halt < StandardError
     end
   end
 end

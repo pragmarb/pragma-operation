@@ -1,5 +1,8 @@
 # frozen_string_literal: true
+require 'interactor'
+
 require 'pragma/operation/version'
+require 'pragma/operation/base'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.
