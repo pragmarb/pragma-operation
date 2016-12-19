@@ -216,7 +216,11 @@ result1 = API::V1::Post::Operation::Create.call(
 )
 
 result1.status # => :created
-result1.resource # => { 'title' => 'My First Post', 'body' => 'Hello everyone, this is my first post!' }
+result1.resource
+# => {
+#      'title' => 'My First Post'
+#      'body' => 'Hello everyone, this is my first post!a'
+#    }
 
 result2 = API::V1::Post::Operation::Create.call(
   params: {
@@ -227,7 +231,11 @@ result2 = API::V1::Post::Operation::Create.call(
 )
 
 result2.status # => :forbidden
-result2.resource # => { 'error_type' => 'forbidden', 'error_message' => 'You are not authorized to perform this operation.' }
+result2.resource
+# => {
+#      'error_type' => 'forbidden',
+#      'error_message' => 'You are not authorized to perform this operation.'
+#    }
 ```
 
 If you want to customize how you handle authorization, you can use the non-bang version `#authorize`:
