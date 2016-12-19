@@ -10,9 +10,6 @@ module Pragma
       include Interactor
 
       STATUSES = {
-        100 => :continue,
-        101 => :switching_protocols,
-        102 => :processing,
         200 => :ok,
         201 => :created,
         202 => :accepted,
@@ -51,12 +48,12 @@ module Pragma
         422 => :unprocessable_entity,
         423 => :locked,
         424 => :failed_dependency,
-        425 => :nocode,
+        425 => :unordered_collection,
         426 => :upgrade_required,
         428 => :precondition_required,
         429 => :too_many_requests,
         431 => :request_header_fields_too_large,
-        449 => :retrywith,
+        449 => :retry_with,
         500 => :internal_server_error,
         501 => :not_implemented,
         502 => :bad_gateway,
