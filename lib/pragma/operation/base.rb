@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 module Pragma
   module Operation
+    # This is the base class all your operations should extend.
+    #
+    # @author Alessandro Desantis
+    #
+    # @abstract Subclass and override {#call} to implement an operation.
     class Base
       include Interactor
 
@@ -74,26 +79,65 @@ module Pragma
       after :consolidate_status
       after :mark_result
 
+      # Runs the operation.
+      def call
+        fail NotImplementedError
+      end
+
       protected
 
+      # Returns the params this operation is being run with.
+      #
+      # This is just a shortcut for +context.params+.
+      #
+      # @return [Hash]
       def params
         context.params
       end
 
+      # Sets the status and resource to respond with.
+      #
+      # You can achieve the same result by setting +context.status+ and +context.resource+ wherever
+      # you want in {#call}.
+      #
+      # Note that calling this method doesn't halt the execution of the operation and that this
+      # method can be called multiple times, overriding the previous context.
+      #
+      # @param status [Integer|Symbol] an HTTP status code
+      # @param resource [Object] an object responding to +#to_json+
       def respond_with(status:, resource:)
         context.status = status
         context.resource = resource
       end
 
+      # Same as {#respond_with}, but also halts the execution of the operation.
+      #
+      # @param status [Integer|Symbol] an HTTP status code
+      # @param resource [Object] an object responding to +#to_json+
+      #
+      # @see #respond_with
       def respond_with!(status:, resource:)
         respond_with status: status, resource: resource
         fail Halt
       end
 
+      # Sets the status to respond with.
+      #
+      # You can achieve the same result by setting +context.status+ wherever you want in {#call}.
+      #
+      # Note that calling this method doesn't halt the execution of the operation and that this
+      # method can be called multiple times, overriding the previous context.
+      #
+      # @param status [Integer|Symbol] an HTTP status code
       def head(status)
         context.status = status
       end
 
+      # Same as {#head}, but also halts the execution of the operation.
+      #
+      # @param status [Integer|Symbol] an HTTP status code
+      #
+      # @see #head
       def head!(status)
         head status
         fail Halt
@@ -107,7 +151,7 @@ module Pragma
 
       def handle_halt(interactor)
         interactor.call
-      rescue Halt
+      rescue Halt # rubocop:disable Lint/HandleExceptions
       end
 
       def set_default_status
@@ -123,7 +167,7 @@ module Pragma
         end
       end
 
-      def conslidate_status
+      def consolidate_status
         context.status = if context.status.is_a?(Integer)
           STATUSES[context.status]
         else
@@ -136,7 +180,13 @@ module Pragma
         context.fail!
       end
 
+      # This error is raised when an invalid status is set for an operation.
+      #
+      # @author Alessandro Desantis
       class InvalidStatusError < StandardError
+        # Initializes the error.
+        #
+        # @param [Integer|Symbol] an invalid HTTP status code
         def initialize(status)
           super "'#{status}' is not a valid HTTP status code."
         end
