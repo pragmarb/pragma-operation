@@ -67,16 +67,40 @@ module Pragma
         511 => :network_authentication_required
       }.freeze
 
-      def self.inherited(child)
-        child.class_eval do
-          before :setup_context
+      class << self
+        # Sets the policy to use for authorizing this operation.
+        #
+        # @param klass [Class] a subclass of +Pragma::Policy::Base+
+        def policy(klass) # rubocop:disable Style/TrivialAccessors
+          @policy = klass
+        end
 
-          around :handle_halt
+        # Returns the name of this operation.
+        #
+        # For instance, if the operation is called +API::V1::Post::Operation::Create+, returns
+        # +create+.
+        #
+        # @return [Symbol]
+        def operation_name
+          name.split('::').last
+            .gsub(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+            .gsub(/([a-z\d])([A-Z])/, '\1_\2')
+            .tr('-', '_')
+            .downcase
+            .to_sym
+        end
 
-          after :mark_result
-          after :consolidate_status
-          after :validate_status
-          after :set_default_status
+        def inherited(child)
+          child.class_eval do
+            before :setup_context
+
+            around :handle_halt
+
+            after :mark_result
+            after :consolidate_status
+            after :validate_status
+            after :set_default_status
+          end
         end
       end
 
@@ -142,6 +166,46 @@ module Pragma
       def head!(status)
         head status
         fail Halt
+      end
+
+      # Returns the current user.
+      #
+      # This is just a shortcut for +context.current_user+.
+      #
+      # @return [Object]
+      def current_user
+        context.current_user
+      end
+
+      # Authorizes this operation on the provided resource.
+      #
+      # @param resource [Object] a resource
+      #
+      # @return [Boolean] whether the operation is authorized
+      def authorize(resource)
+        policy = self.class.instance_variable_get('@policy').new(
+          user: current_user,
+          resource: resource
+        )
+
+        policy.send("#{self.class.operation_name}?")
+      end
+
+      # Authorizes this operation on the provided resource. If the user is not authorized to
+      # perform the operation, responds with 403 Forbidden and an error body and halts the
+      # execution.
+      #
+      # @param resource [Object] a resource
+      def authorize!(resource)
+        return if authorize(resource)
+
+        respond_with!(
+          status: :forbidden,
+          resource: {
+            error_type: :forbidden,
+            error_message: 'You are not authorized to perform this operation.'
+          }
+        )
       end
 
       private

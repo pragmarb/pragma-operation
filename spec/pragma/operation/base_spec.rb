@@ -28,7 +28,9 @@ RSpec.describe Pragma::Operation::Base do
   end
 
   let(:params) { { pong: 'HELLO' } }
-  let(:context) { operation.call(params: params) }
+  let(:current_user) { nil }
+
+  let(:context) { operation.call(params: params, current_user: current_user) }
 
   it 'converts numeric status codes into symbols' do
     expect(context.status).to eq(:ok)
@@ -71,6 +73,12 @@ RSpec.describe Pragma::Operation::Base do
       it 'sets the 204 No Content status code' do
         expect(context.status).to eq(:no_content)
       end
+    end
+  end
+
+  describe '.operation_name' do
+    it 'returns the name of the operation' do
+      expect(described_class.operation_name).to eq(:base)
     end
   end
 
@@ -122,6 +130,62 @@ RSpec.describe Pragma::Operation::Base do
 
       it 'returns false' do
         expect(context).not_to be_success
+      end
+    end
+  end
+
+  describe '#authorize!' do
+    let(:operation) do
+      Class.new(described_class) do
+        # rubocop:disable Lint/ParenthesesAsGroupedExpression
+        policy (Class.new do
+          def initialize(user:, resource:)
+            @user = user
+            @resource = resource
+          end
+
+          def create?
+            @user.admin? # rubocop:disable RSpec/InstanceVariable
+          end
+        end)
+        # rubocop:enable Lint/ParenthesesAsGroupedExpression
+
+        class << self
+          def name
+            'API::V1::Page::Operation::Create'
+          end
+        end
+
+        def call
+          resource = OpenStruct.new
+          authorize! resource
+
+          respond_with status: :ok, resource: resource
+        end
+      end
+    end
+
+    context 'when the user is authorized' do
+      let(:current_user) { OpenStruct.new(admin?: true) }
+
+      it 'runs the operation' do
+        expect(context).to be_success
+      end
+    end
+
+    context 'when the user is not authorized' do
+      let(:current_user) { OpenStruct.new(admin?: false) }
+
+      it 'halts the execution' do
+        expect(context).not_to be_success
+      end
+
+      it 'responds with the 403 Forbidden status code' do
+        expect(context.status).to eq(:forbidden)
+      end
+
+      it 'responds with error details' do
+        expect(context.resource[:error_type]).to eq(:forbidden)
       end
     end
   end
