@@ -1,18 +1,6 @@
 # frozen_string_literal: true
 module Pragma
   module Operation
-    # This error is raised when an invalid status is set for an operation.
-    #
-    # @author Alessandro Desantis
-    class InvalidStatusError < StandardError
-      # Initializes the error.
-      #
-      # @param [Integer|Symbol] an invalid HTTP status code
-      def initialize(status)
-        super "'#{status}' is not a valid HTTP status code."
-      end
-    end
-
     module Status
       STATUSES = {
         200 => :ok,
@@ -107,6 +95,18 @@ module Pragma
       def mark_result
         return if /\A(2|3)\d{2}\z/ =~ STATUSES.invert[context.status].to_s
         context.fail!
+      end
+    end
+
+    # This error is raised when an invalid status is set for an operation.
+    #
+    # @author Alessandro Desantis
+    class InvalidStatusError < StandardError
+      # Initializes the error.
+      #
+      # @param [Integer|Symbol] an invalid HTTP status code
+      def initialize(status)
+        super "'#{status}' is not a valid HTTP status code."
       end
     end
   end

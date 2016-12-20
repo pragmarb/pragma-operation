@@ -17,7 +17,6 @@ module Pragma
             include Validation
 
             before :setup_context
-
             around :handle_halt
           end
         end
@@ -141,7 +140,6 @@ module Pragma
     # rescued by the operation.
     #
     # @author Alessandro Desantis
-    class Halt < StandardError
-    end
+    Halt = Class.new(StandardError)
   end
 end
