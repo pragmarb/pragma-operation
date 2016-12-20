@@ -277,7 +277,7 @@ module Pragma
         contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
           validatable
         else
-          build_contract(validate)
+          build_contract(validatable)
         end
 
         contract.validate(params)
@@ -291,7 +291,7 @@ module Pragma
         contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
           validatable
         else
-          build_contract(validate)
+          build_contract(validatable)
         end
 
         return if validate(contract)
