@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe Pragma::Operation::Authorization do
   let(:context) { operation.call(current_user: current_user) }
 
