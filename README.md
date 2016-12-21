@@ -9,20 +9,6 @@ Operations encapsulate the business logic of your JSON API.
 
 They are built on top of the awesome [Interactor](https://github.com/collectiveidea/interactor) gem.
 
-<!-- MarkdownTOC depth=3 autolink=true bracket=round -->
-
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Handling errors](#handling-errors)
-  - [Halting the execution](#halting-the-execution)
-- [Integrations](#integrations)
-  - [Pragma::Contract](#pragmacontract)
-  - [Pragma::Policy](#pragmapolicy)
-- [Contributing](#contributing)
-- [License](#license)
-
-<!-- /MarkdownTOC -->
-
 ## Installation
 
 Add this line to your application's Gemfile:
