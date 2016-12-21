@@ -2,6 +2,55 @@
 RSpec.describe Pragma::Operation::Authorization do
   let(:context) { operation.call(current_user: current_user) }
 
+  describe '#authorize' do
+    let(:operation) do
+      Class.new(Pragma::Operation::Base) do
+        # rubocop:disable Lint/ParenthesesAsGroupedExpression
+        policy (Class.new do
+          def initialize(user:, resource:)
+            @user = user
+            @resource = resource
+          end
+
+          def create?
+            @user.admin? # rubocop:disable RSpec/InstanceVariable
+          end
+        end)
+        # rubocop:enable Lint/ParenthesesAsGroupedExpression
+
+        class << self
+          def name
+            'API::V1::Page::Operation::Create'
+          end
+        end
+
+        def call
+          resource = OpenStruct.new
+
+          respond_with status: :ok, resource: {
+            authorized: authorize(resource)
+          }
+        end
+      end
+    end
+
+    context 'when the user is authorized' do
+      let(:current_user) { OpenStruct.new(admin?: true) }
+
+      it 'returns true' do
+        expect(context.resource[:authorized]).to eq(true)
+      end
+    end
+
+    context 'when the user is not authorized' do
+      let(:current_user) { OpenStruct.new(admin?: false) }
+
+      it 'returns false' do
+        expect(context.resource[:authorized]).to eq(false)
+      end
+    end
+  end
+
   describe '#authorize!' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
