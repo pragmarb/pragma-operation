@@ -1,23 +1,20 @@
 # frozen_string_literal: true
+require 'pragma/policy'
+
 RSpec.describe Pragma::Operation::Authorization do
   let(:context) { operation.call(current_user: current_user) }
+
+  let(:policy_klass) do
+    Class.new(Pragma::Policy::Base) do
+      def create?
+        user.admin?
+      end
+    end
+  end
 
   describe '#authorize' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
-        # rubocop:disable Lint/ParenthesesAsGroupedExpression
-        policy (Class.new do
-          def initialize(user:, resource:)
-            @user = user
-            @resource = resource
-          end
-
-          def create?
-            @user.admin? # rubocop:disable RSpec/InstanceVariable
-          end
-        end)
-        # rubocop:enable Lint/ParenthesesAsGroupedExpression
-
         class << self
           def name
             'API::V1::Page::Operation::Create'
@@ -31,6 +28,8 @@ RSpec.describe Pragma::Operation::Authorization do
             authorized: authorize(resource)
           }
         end
+      end.tap do |klass|
+        klass.send(:policy, policy_klass)
       end
     end
 
@@ -54,19 +53,6 @@ RSpec.describe Pragma::Operation::Authorization do
   describe '#authorize!' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
-        # rubocop:disable Lint/ParenthesesAsGroupedExpression
-        policy (Class.new do
-          def initialize(user:, resource:)
-            @user = user
-            @resource = resource
-          end
-
-          def create?
-            @user.admin? # rubocop:disable RSpec/InstanceVariable
-          end
-        end)
-        # rubocop:enable Lint/ParenthesesAsGroupedExpression
-
         class << self
           def name
             'API::V1::Page::Operation::Create'
@@ -79,6 +65,8 @@ RSpec.describe Pragma::Operation::Authorization do
 
           respond_with status: :ok, resource: resource
         end
+      end.tap do |klass|
+        klass.send(:policy, policy_klass)
       end
     end
 

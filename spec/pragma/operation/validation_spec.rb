@@ -1,33 +1,29 @@
 # frozen_string_literal: true
-RSpec.describe Pragma::Operation::Authorization do
+require 'pragma/contract'
+
+RSpec.describe Pragma::Operation::Validation do
   let(:context) { operation.call(params: params) }
+
+  let(:contract_klass) do
+    Class.new(Pragma::Contract::Base) do
+      property :pong
+
+      validation :default do
+        required(:pong).filled
+      end
+    end
+  end
 
   describe '#authorize' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
-        # rubocop:disable Lint/ParenthesesAsGroupedExpression
-        contract (Class.new do
-          attr_reader :errors
-          @errors = []
-
-          def initialize(resource)
-          end
-
-          def validate(params)
-            if params[:pong].empty?
-              errors << ['pong cannot be empty']
-            end
-          end
-        end)
-        # rubocop:enable Lint/ParenthesesAsGroupedExpression
-
         def call
-          resource = OpenStruct.new
-
           respond_with status: :ok, resource: {
-            valid: validate(resource)
+            valid: validate(OpenStruct.new)
           }
         end
+      end.tap do |klass|
+        klass.send(:contract, contract_klass)
       end
     end
 
@@ -51,30 +47,12 @@ RSpec.describe Pragma::Operation::Authorization do
   describe '#validate!' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
-        # rubocop:disable Lint/ParenthesesAsGroupedExpression
-        contract (Class.new do
-          attr_reader :errors
-          @errors = []
-
-          def initialize(resource)
-          end
-
-          def validate(params)
-            if params[:pong].empty?
-              errors << ['pong cannot be empty']
-            end
-          end
-        end)
-        # rubocop:enable Lint/ParenthesesAsGroupedExpression
-
         def call
-          resource = OpenStruct.new
-          validate! resource
-
-          respond_with status: :ok, resource: {
-            valid: validate(resource)
-          }
+          validate! OpenStruct.new
+          respond_with status: :ok, resource: nil
         end
+      end.tap do |klass|
+        klass.send(:contract, contract_klass)
       end
     end
 
@@ -98,7 +76,7 @@ RSpec.describe Pragma::Operation::Authorization do
       end
 
       it 'responds with error details' do
-        expect(context.resource[:meta][:errors]).to eq(['pong cannot be empty'])
+        expect(context.resource[:meta][:errors]).to eq(pong: ['must be filled'])
       end
     end
   end
