@@ -28,8 +28,8 @@ module Pragma
       end
 
       module InstanceMethods
-        # Builds the policy for the current user and the given resource, using the previously defined
-        # policy class.
+        # Builds the policy for the current user and the given resource, using the previously
+        # defined policy class.
         #
         # @param resource [Object]
         #
@@ -43,26 +43,26 @@ module Pragma
 
         # Authorizes this operation on the provided resource or policy.
         #
-        # @param authorizable [Pragma::Policy::Base|Object] resource or policy
+        # @param validatable [Pragma::Policy::Base|Object] resource or policy
         #
         # @return [Boolean] whether the operation is authorized
-        def authorize(authorizable)
-          policy = if defined?(Pragma::Policy::Base) && authorizable.is_a?(Pragma::Policy::Base)
-            authorizable
+        def authorize(validatable)
+          policy = if defined?(Pragma::Policy::Base) && validatable.is_a?(Pragma::Policy::Base)
+            validatable
           else
-            build_policy(authorizable)
+            build_policy(validatable)
           end
 
           policy.send("#{self.class.operation_name}?")
         end
 
-        # Authorizes this operation on the provided resource or policy. If the user is not authorized
-        # to perform the operation, responds with 403 Forbidden and an error body and halts the
-        # execution.
+        # Authorizes this operation on the provided resource or policy. If the user is not
+        # authorized to perform the operation, responds with 403 Forbidden and an error body and
+        # halts the execution.
         #
-        # @param authorizable [Pragma::Policy::Base|Object] resource or policy
-        def authorize!(authorizable)
-          return if authorize(authorizable)
+        # @param validatable [Pragma::Policy::Base|Object] resource or policy
+        def authorize!(validatable)
+          return if authorize(validatable)
 
           respond_with!(
             status: :forbidden,

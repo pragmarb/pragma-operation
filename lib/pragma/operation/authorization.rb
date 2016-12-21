@@ -47,14 +47,14 @@ module Pragma
 
         # Validates this operation on the provided contract or resource.
         #
-        # @param validatable [Object|Pragma::Contract::Base] contract or resource
+        # @param authorizable [Object|Pragma::Contract::Base] contract or resource
         #
         # @return [Boolean] whether the operation is valid
-        def validate(validatable)
-          contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
-            validatable
+        def validate(authorizable)
+          contract = if defined?(Pragma::Contract::Base) && authorizable.is_a?(Pragma::Contract::Base)
+            authorizable
           else
-            build_contract(validatable)
+            build_contract(authorizable)
           end
 
           contract.validate(params)
@@ -63,12 +63,12 @@ module Pragma
         # Validates this operation on the provided contract or resource. If the operation is not
         # valid, responds with 422 Unprocessable Entity and an error body and halts the execution.
         #
-        # @param validatable [Object|Pragma::Contract::Base] contract or resource
-        def validate!(validatable)
-          contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
-            validatable
+        # @param authorizable [Object|Pragma::Contract::Base] contract or resource
+        def validate!(authorizable)
+          contract = if defined?(Pragma::Contract::Base) && authorizable.is_a?(Pragma::Contract::Base)
+            authorizable
           else
-            build_contract(validatable)
+            build_contract(authorizable)
           end
 
           return if validate(contract)
