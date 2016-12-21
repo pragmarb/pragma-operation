@@ -3,7 +3,6 @@ require 'interactor'
 
 require 'pragma/operation/version'
 require 'pragma/operation/base'
-require 'pragma/operation/status'
 require 'pragma/operation/authorization'
 require 'pragma/operation/validation'
 
