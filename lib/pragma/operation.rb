@@ -5,6 +5,7 @@ require 'pragma/operation/version'
 require 'pragma/operation/base'
 require 'pragma/operation/authorization'
 require 'pragma/operation/validation'
+require 'pragma/operation/decoration'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.

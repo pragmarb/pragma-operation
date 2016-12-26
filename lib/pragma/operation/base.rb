@@ -72,6 +72,7 @@ module Pragma
           child.class_eval do
             include Authorization
             include Validation
+            include Decoration
 
             before :setup_context
             around :handle_halt
