@@ -1,33 +1,38 @@
 # frozen_string_literal: true
 module Pragma
   module Operation
+    # Provides integration with {https://github.com/pragmarb/pragma-policy Pragma::Policy}.
+    #
+    # @author Alessandro Desantis
     module Authorization
       def self.included(base)
         base.extend ClassMethods
         base.include InstanceMethods
       end
 
-      module ClassMethods
-        # Sets the contract to use for validating this operation.
+      module ClassMethods # :nodoc:
+        # Sets the policy to use for authorizing this operation.
         #
-        # @param klass [Class] a subclass of +Pragma::Contract::Base+
-        def contract(klass)
-          @contract = klass
+        # @param klass [Class] a subclass of +Pragma::Policy::Base+
+        def policy(klass)
+          @policy = klass
         end
 
-        # Builds the contract for the given resource, using the previous defined contract class.
+        # Builds the policy for the given user and resource, using the previous defined policy
+        # class.
         #
+        # @param user [Object]
         # @param resource [Object]
         #
-        # @return [Pragma::Contract::Base]
+        # @return [Pragma::Policy::Base]
         #
-        # @see #contract
-        def build_contract(resource)
-          @contract.new(resource)
+        # @see #policy
+        def build_policy(user:, resource:)
+          @policy.new(user: user, resource: resource)
         end
       end
 
-      module InstanceMethods
+      module InstanceMethods # :nodoc:
         # Builds the policy for the current user and the given resource, using the previously
         # defined policy class.
         #

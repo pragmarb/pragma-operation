@@ -1,35 +1,36 @@
 # frozen_string_literal: true
 module Pragma
   module Operation
+    # Provides integration with {https://github.com/pragmarb/pragma-contract Pragma::Contract}.
+    #
+    # @author Alessandro Desantis
     module Validation
       def self.included(base)
         base.extend ClassMethods
         base.include InstanceMethods
       end
 
-      module ClassMethods
-        # Sets the policy to use for authorizing this operation.
+      module ClassMethods # :nodoc:
+        # Sets the contract to use for validating this operation.
         #
-        # @param klass [Class] a subclass of +Pragma::Policy::Base+
-        def policy(klass)
-          @policy = klass
+        # @param klass [Class] a subclass of +Pragma::Contract::Base+
+        def contract(klass)
+          @contract = klass
         end
 
-        # Builds the policy for the given user and resource, using the previous defined policy
-        # class.
+        # Builds the contract for the given resource, using the previous defined contract class.
         #
-        # @param user [Object]
         # @param resource [Object]
         #
-        # @return [Pragma::Policy::Base]
+        # @return [Pragma::Contract::Base]
         #
-        # @see #policy
-        def build_policy(user:, resource:)
-          @policy.new(user: user, resource: resource)
+        # @see #contract
+        def build_contract(resource)
+          @contract.new(resource)
         end
       end
 
-      module InstanceMethods
+      module InstanceMethods # :nodoc:
         # Builds the contract for the given resource, using the previously defined contract class.
         #
         # This is just an instance-level alias of {.build_contract}. You should use this from inside
@@ -51,11 +52,13 @@ module Pragma
         #
         # @return [Boolean] whether the operation is valid
         def validate(validatable)
+          # rubocop:disable Metrics/LineLength
           contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
             validatable
           else
             build_contract(validatable)
           end
+          # rubocop:enable Metrics/LineLength
 
           contract.validate(params)
         end
@@ -65,11 +68,13 @@ module Pragma
         #
         # @param validatable [Object|Pragma::Contract::Base] contract or resource
         def validate!(validatable)
+          # rubocop:disable Metrics/LineLength
           contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
             validatable
           else
             build_contract(validatable)
           end
+          # rubocop:enable Metrics/LineLength
 
           return if validate(contract)
 
