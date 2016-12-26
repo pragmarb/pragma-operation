@@ -22,6 +22,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'interactor', '~> 3.1.0'
 
+  spec.add_development_dependency 'pragma-policy', '~> 0.1.0'
+  spec.add_development_dependency 'pragma-contract', '~> 0.1.0'
+
   spec.add_development_dependency "bundler"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
