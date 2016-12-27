@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'pragma/decorator'
 
-RSpec.describe Pragma::Operation::Authorization do
+RSpec.describe Pragma::Operation::Decoration do
   let(:context) { operation.call }
 
   let(:decorator_klass) do

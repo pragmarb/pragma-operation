@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module Pragma
   module Operation
     # Provides integration with {https://github.com/pragmarb/pragma-decorator Pragma::Decorator}.
