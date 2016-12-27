@@ -44,7 +44,7 @@ module Pragma
         # @see .decorator
         # @see .decorate
         def build_decorator(resource)
-          self.class.decorate(resource)
+          self.class.build_decorator(resource)
         end
 
         alias_method :decorate, :build_decorator
