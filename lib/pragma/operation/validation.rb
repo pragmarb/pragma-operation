@@ -33,7 +33,7 @@ module Pragma
         #
         # @see #contract
         def build_contract(resource)
-          @contract.new(resource)
+          contract_klass.new(resource)
         end
       end
 

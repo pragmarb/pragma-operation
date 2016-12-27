@@ -34,7 +34,7 @@ module Pragma
         #
         # @see #decorator
         def build_decorator(resource)
-          @decorator.represent(resource)
+          decorator_klass.represent(resource)
         end
       end
 
