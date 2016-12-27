@@ -55,11 +55,15 @@ module Pragma
 
         # Authorizes this operation on the provided resource or policy.
         #
+        # If no policy was defined, simply returns true.
+        #
         # @param authorizable [Pragma::Policy::Base|Object] resource or policy
         #
         # @return [Boolean] whether the operation is authorized
         def authorize(authorizable)
-          policy = if defined?(Pragma::Policy::Base) && authorizable.is_a?(Pragma::Policy::Base)
+          return true unless self.class.policy_klass
+
+          policy = if authorizable.is_a?(self.class.policy_klass)
             authorizable
           else
             build_policy(authorizable)

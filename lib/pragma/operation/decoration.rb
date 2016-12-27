@@ -48,13 +48,22 @@ module Pragma
         #
         # @return [Pragma::Decorator::Base]
         #
-        # @see .decorator
-        # @see .decorate
+        # @see #decorate
         def build_decorator(resource)
           self.class.build_decorator(resource)
         end
 
-        alias_method :decorate, :build_decorator
+        # If a decorator is defined, acts as an alias for {#build_decorator}. If not, simply returns
+        # the provided resource.
+        # @param decoratable [Object]
+        #
+        # @return [Pragma::Decorator::Base|Object]
+        #
+        # @see #build_decorator
+        def decorate(decoratable)
+          return true unless self.class.decorator_klass
+          build_decorator(decoratable)
+        end
       end
     end
   end

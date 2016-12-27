@@ -60,7 +60,7 @@ module Pragma
         # @return [Boolean] whether the operation is valid
         def validate(validatable)
           # rubocop:disable Metrics/LineLength
-          contract = if defined?(Pragma::Contract::Base) && validatable.is_a?(Pragma::Contract::Base)
+          contract = if validatable.is_a?(self.class.contract_klass)
             validatable
           else
             build_contract(validatable)
