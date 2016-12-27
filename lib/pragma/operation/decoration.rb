@@ -61,7 +61,7 @@ module Pragma
         #
         # @see #build_decorator
         def decorate(decoratable)
-          return true unless self.class.decorator_klass
+          return decoratable unless self.class.decorator_klass
           build_decorator(decoratable)
         end
       end
