@@ -17,6 +17,13 @@ module Pragma
           @decorator = klass
         end
 
+        # Returns the decorator class.
+        #
+        # @return [Class]
+        def decorator_klass
+          @decorator
+        end
+
         # Builds the decorator for the given resource, using the previously defined decorator class.
         #
         # Works with both singular resources and collections.

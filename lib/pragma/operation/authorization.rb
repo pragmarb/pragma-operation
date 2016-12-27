@@ -18,6 +18,13 @@ module Pragma
           @policy = klass
         end
 
+        # Returns the policy class.
+        #
+        # @return [Class]
+        def policy_klass
+          @policy
+        end
+
         # Builds the policy for the given user and resource, using the previous defined policy
         # class.
         #
@@ -28,7 +35,7 @@ module Pragma
         #
         # @see #policy
         def build_policy(user:, resource:)
-          @policy.new(user: user, resource: resource)
+          policy_klass.new(user: user, resource: resource)
         end
       end
 

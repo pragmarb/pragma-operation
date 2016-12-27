@@ -18,6 +18,13 @@ module Pragma
           @contract = klass
         end
 
+        # Returns the contract class.
+        #
+        # @return [Class]
+        def contract_klass
+          @contract
+        end
+
         # Builds the contract for the given resource, using the previous defined contract class.
         #
         # @param resource [Object]
