@@ -9,6 +9,10 @@ module Pragma
     class Base
       include Interactor
 
+      include Authorization
+      include Validation
+      include Decoration
+
       STATUSES = {
         200 => :ok,
         201 => :created,
@@ -70,10 +74,6 @@ module Pragma
       class << self
         def inherited(child)
           child.class_eval do
-            include Authorization
-            include Validation
-            include Decoration
-
             before :setup_context
             around :handle_halt
             after :mark_result, :consolidate_status, :validate_status, :set_default_status
