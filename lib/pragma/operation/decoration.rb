@@ -26,7 +26,7 @@ module Pragma
         # @return [Pragma::Decorator::Base]
         #
         # @see #decorator
-        def decorate(resource)
+        def build_decorator(resource)
           @decorator.represent(resource)
         end
       end
@@ -34,7 +34,7 @@ module Pragma
       module InstanceMethods # :nodoc:
         # Builds the decorator for the given resource, using the previously defined decorator class.
         #
-        # This is just an instance-level alias of {.decorate}. You should use this from
+        # This is just an instance-level alias of {.build_decorator}. You should use this from
         # inside the operation.
         #
         # @param resource [Object]
@@ -43,9 +43,11 @@ module Pragma
         #
         # @see .decorator
         # @see .decorate
-        def decorate(resource)
+        def build_decorator(resource)
           self.class.decorate(resource)
         end
+
+        alias_method :decorate, :build_decorator
       end
     end
   end
