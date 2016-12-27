@@ -6,6 +6,12 @@ RSpec.describe Pragma::Operation::Authorization do
 
   let(:policy_klass) do
     Class.new(Pragma::Policy::Base) do
+      def self.accessible_by(user:, scope:)
+        scope.select do |record|
+          record.author_id == user.id
+        end
+      end
+
       def create?
         user.admin?
       end
@@ -92,6 +98,35 @@ RSpec.describe Pragma::Operation::Authorization do
       it 'responds with error details' do
         expect(context.resource[:error_type]).to eq(:forbidden)
       end
+    end
+  end
+
+  describe '#authorize_collection' do
+    let(:operation) do
+      Class.new(Pragma::Operation::Base) do
+        class << self
+          def name
+            'API::V1::Page::Operation::Index'
+          end
+        end
+
+        def call
+          resources = [
+            OpenStruct.new(author_id: 1),
+            OpenStruct.new(author_id: 2)
+          ]
+
+          respond_with status: :ok, resource: authorize_collection(resources)
+        end
+      end.tap do |klass|
+        klass.send(:policy, policy_klass)
+      end
+    end
+
+    let(:current_user) { OpenStruct.new(id: 1) }
+
+    it 'runs .accessible_by on the policy' do
+      expect(context.resource.map(&:author_id)).to eq([1])
     end
   end
 end

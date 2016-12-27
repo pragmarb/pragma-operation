@@ -88,6 +88,22 @@ module Pragma
             }
           )
         end
+
+        # Scopes the provided collection.
+        #
+        # If no policy class is defined, simply returns the collection.
+        #
+        # @param collection [Enumerable]
+        #
+        # @return [Pragma::Decorator::Base|Enumerable]
+        def authorize_collection(collection)
+          return collection unless self.class.policy_klass
+
+          self.class.policy_klass.accessible_by(
+            user: current_user,
+            scope: collection
+          )
+        end
       end
     end
   end
