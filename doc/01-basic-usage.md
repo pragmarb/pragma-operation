@@ -104,6 +104,8 @@ result.headers
 #    }
 ```
 
+Note that an existing `Link` header will not be replaced.
+
 ## Handling errors
 
 You can use the `#success?` and `#failure?` method to check whether an operation was successful. An
