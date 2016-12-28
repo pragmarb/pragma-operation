@@ -62,6 +62,48 @@ Since Pragma::Operation is built on top of [Interactor](https://github.com/colle
 you should consult its documentation for the basic usage of operations; the rest of this section
 only covers the features provided specifically by Pragma::Operation.
 
+## HATEOAS
+
+Pragma::Operation supports HATEOAS by allowing you to specify a list of links to use for building
+the `Link` header. You can set the links when calling `#respond_with` or by manipulating
+`context.links` directly.
+
+For instance, here's how you could link to a post's comments and author:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Show < Pragma::Operation::Base
+          def call
+            post = ::Post.find(params[:id])
+
+            respond_with resource: post, links: {
+              comments: "/posts/#{post.id}/comments",
+              author: "/users/#{post.author.id}"
+            }
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+This will build the `Link` header accordingly:
+
+```ruby
+result = API::V1::Post::Operation::Show.call(params: { id: 1 })
+
+result.status # => :ok
+result.headers
+# => {
+#      'Link' => '</posts/1/comments>; rel="comments",
+#                   </users/49>; rel="author"'
+#    }
+```
+
 ## Handling errors
 
 You can use the `#success?` and `#failure?` method to check whether an operation was successful. An

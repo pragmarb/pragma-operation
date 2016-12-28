@@ -76,7 +76,10 @@ module Pragma
           child.class_eval do
             before :setup_context
             around :handle_halt
-            after :mark_result, :consolidate_status, :validate_status, :set_default_status
+            after(
+              :mark_result, :consolidate_status, :validate_status, :set_default_status,
+              :build_link_header
+            )
           end
         end
 
@@ -121,12 +124,14 @@ module Pragma
       # method can be called multiple times, overriding the previous context.
       #
       # @param status [Integer|Symbol] an HTTP status code
-      # @param headers [Hash] HTTP headers
       # @param resource [Object] an object responding to +#to_json+
-      def respond_with(status: nil, headers: {}, resource: nil)
+      # @param headers [Hash] HTTP headers
+      # @param links [Hash] links to use for building the +Link+ header
+      def respond_with(status: nil, resource: nil, headers: {}, links: {})
         context.status = status
-        context.headers = headers.to_h
         context.resource = resource
+        context.headers = headers.to_h
+        context.links = links
       end
 
       # Same as {#respond_with}, but also halts the execution of the operation.
@@ -187,6 +192,7 @@ module Pragma
       def setup_context
         context.params ||= {}
         context.headers = {}
+        context.links = {}
       end
 
       def handle_halt(interactor)
@@ -218,6 +224,14 @@ module Pragma
       def mark_result
         return if /\A(2|3)\d{2}\z/ =~ STATUSES.invert[context.status].to_s
         context.fail!
+      end
+
+      def build_link_header
+        return if context.headers['Link']
+
+        context.headers['Link'] = context.links.each_pair.map do |relation, url|
+          %Q[<#{url}>; rel="#{relation}"]
+        end.join(",\n  ")
       end
     end
 

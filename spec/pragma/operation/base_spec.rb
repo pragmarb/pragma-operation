@@ -8,7 +8,8 @@ RSpec.describe Pragma::Operation::Base do
         respond_with(
           status: 200,
           resource: { pong: params[:pong] },
-          headers: { 'X-Ping-Time' => Time.now.to_i }
+          headers: { 'X-Ping-Time' => Time.now.to_i },
+          links: { google: 'https://www.google.com' }
         )
       end
 
@@ -43,6 +44,10 @@ RSpec.describe Pragma::Operation::Base do
 
   it 'responds with headers' do
     expect(context.headers['X-Ping-Time']).to be_instance_of(Fixnum)
+  end
+
+  it 'respodns with HATEOAS links' do
+    expect(context.headers['Link']).to eq('<https://www.google.com>; rel="google"')
   end
 
   context 'when the response status is invalid' do
