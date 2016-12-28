@@ -43,7 +43,7 @@ RSpec.describe Pragma::Operation::Base do
   end
 
   it 'responds with headers' do
-    expect(context.headers['X-Ping-Time']).to be_instance_of(Fixnum)
+    expect(context.headers['X-Ping-Time']).to be_instance_of(Integer)
   end
 
   it 'respodns with HATEOAS links' do

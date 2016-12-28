@@ -138,7 +138,7 @@ module Pragma
       #
       # @see #respond_with
       def respond_with!(*args)
-        respond_with *args
+        respond_with(*args)
         fail Halt
       end
 
@@ -230,7 +230,7 @@ module Pragma
         return if context.headers['Link']
 
         context.headers['Link'] = context.links.each_pair.map do |relation, url|
-          %Q[<#{url}>; rel="#{relation}"]
+          %(<#{url}>; rel="#{relation}")
         end.join(",\n  ")
       end
     end
