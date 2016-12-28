@@ -9,7 +9,14 @@ module API
       module Operation
         class Create < Pragma::Operation::Base
           def call
-            respond_with status: :ok, resource: { pong: params[:pong] }
+            # The `status` parameter is optional (the default is `:ok`).
+            respond_with(
+              status: :ok,
+              resource: { pong: params[:pong] },
+              headers: {
+                'X-Ping-Time' => Time.now.to_i
+              }
+            )
           end
         end
       end
@@ -25,6 +32,7 @@ result = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
 
 result.status # => :ok
 result.resource # => { pong: 'HELLO' }
+result.headers # => { 'X-Ping-Time' => 1482927872 }
 ```
 
 As you can see, an operation takes parameters as input and responds with:

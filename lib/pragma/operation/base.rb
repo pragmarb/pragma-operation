@@ -122,7 +122,7 @@ module Pragma
       #
       # @param status [Integer|Symbol] an HTTP status code
       # @param resource [Object] an object responding to +#to_json+
-      def respond_with(status:, resource:)
+      def respond_with(status: :ok, resource:)
         context.status = status
         context.resource = resource
       end
