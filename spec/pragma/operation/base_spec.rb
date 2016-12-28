@@ -7,7 +7,8 @@ RSpec.describe Pragma::Operation::Base do
       def call
         respond_with(
           status: 200,
-          resource: { pong: params[:pong] }
+          resource: { pong: params[:pong] },
+          headers: { 'X-Ping-Time' => Time.now.to_i }
         )
       end
 
@@ -32,8 +33,16 @@ RSpec.describe Pragma::Operation::Base do
 
   let(:context) { operation.call(params: params, current_user: current_user) }
 
-  it 'converts numeric status codes into symbols' do
+  it 'responds with a status code' do
     expect(context.status).to eq(:ok)
+  end
+
+  it 'responds with a resource' do
+    expect(context.resource).to eq(pong: params[:pong])
+  end
+
+  it 'responds with headers' do
+    expect(context.headers['X-Ping-Time']).to be_instance_of(Fixnum)
   end
 
   context 'when the response status is invalid' do

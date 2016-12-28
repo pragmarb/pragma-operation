@@ -114,27 +114,26 @@ module Pragma
 
       # Sets the status and resource to respond with.
       #
-      # You can achieve the same result by setting +context.status+ and +context.resource+ wherever
-      # you want in {#call}.
+      # You can achieve the same result by setting +context.status+, +context.headers+ and
+      # +context.resource+ wherever you want in {#call}.
       #
       # Note that calling this method doesn't halt the execution of the operation and that this
       # method can be called multiple times, overriding the previous context.
       #
       # @param status [Integer|Symbol] an HTTP status code
+      # @param headers [Hash] HTTP headers
       # @param resource [Object] an object responding to +#to_json+
-      def respond_with(status: :ok, resource:)
+      def respond_with(status: :ok, headers: {}, resource:)
         context.status = status
+        context.headers = headers.to_h
         context.resource = resource
       end
 
       # Same as {#respond_with}, but also halts the execution of the operation.
       #
-      # @param status [Integer|Symbol] an HTTP status code
-      # @param resource [Object] an object responding to +#to_json+
-      #
       # @see #respond_with
-      def respond_with!(status:, resource:)
-        respond_with status: status, resource: resource
+      def respond_with!(*args)
+        respond_with *args
         fail Halt
       end
 
@@ -187,6 +186,7 @@ module Pragma
 
       def setup_context
         context.params ||= {}
+        context.headers = {}
       end
 
       def handle_halt(interactor)
