@@ -12,10 +12,7 @@ module API
             # The `status` parameter is optional (the default is `:ok`).
             respond_with(
               status: :ok,
-              resource: { pong: params[:pong] },
-              headers: {
-                'X-Ping-Time' => Time.now.to_i
-              }
+              resource: { pong: params[:pong] }
             )
           end
         end
@@ -32,7 +29,6 @@ result = API::V1::Ping::Operation::Create.call(params: { pong: 'HELLO' })
 
 result.status # => :ok
 result.resource # => { pong: 'HELLO' }
-result.headers # => { 'X-Ping-Time' => 1482927872 }
 ```
 
 As you can see, an operation takes parameters as input and responds with:
@@ -62,13 +58,83 @@ Since Pragma::Operation is built on top of [Interactor](https://github.com/colle
 you should consult its documentation for the basic usage of operations; the rest of this section
 only covers the features provided specifically by Pragma::Operation.
 
+## Headers
+
+You can attach headers to your response by manipulating the `headers` hash:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          def call
+            post = ::Post.new(params)
+            post.save!
+
+            headers['X-Post-Id'] = post.id
+
+            respond_with status: :created, resource: post
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+You can also set headers when calling `#respond_with`:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          def call
+            post = ::Post.new(params)
+            post.save!
+
+            respond_with status: :created, resource: post, headers: {
+              'X-Post-Id' => post.id
+            }
+          end
+        end
+      end
+    end
+  end
+end
+```
+
 ## HATEOAS
 
 Pragma::Operation supports HATEOAS by allowing you to specify a list of links to use for building
-the `Link` header. You can set the links when calling `#respond_with` or by manipulating
-`context.links` directly.
+the `Link` header. You can set the links by manipulating the `links` hash.
 
 For instance, here's how you could link to a post's comments and author:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Show < Pragma::Operation::Base
+          def call
+            post = ::Post.find(params[:id])
+
+            links['comments'] = "/posts/#{post.id}/comments"
+            links['author'] = "/users/#{post.author.id}"
+
+            respond_with resource: post
+          end
+        end
+      end
+    end
+  end
+end
+```
+
+You can also set the links when calling `#respond_with`:
 
 ```ruby
 module API
@@ -99,12 +165,13 @@ result = API::V1::Post::Operation::Show.call(params: { id: 1 })
 result.status # => :ok
 result.headers
 # => {
-#      'Link' => '</posts/1/comments>; rel="comments",
-#                   </users/49>; rel="author"'
+#   'Link' => '</posts/1/comments>; rel="comments",
+#                </users/49>; rel="author"'
 #    }
 ```
 
-Note that an existing `Link` header will not be replaced.
+**Note: Do not set the `Link` header manually, as it will be replaced when building links from the
+`links` hash.**
 
 ## Handling errors
 

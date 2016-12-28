@@ -76,10 +76,8 @@ module Pragma
           child.class_eval do
             before :setup_context
             around :handle_halt
-            after(
-              :mark_result, :consolidate_status, :validate_status, :set_default_status,
-              :build_link_header
-            )
+            after :mark_result, :consolidate_status, :validate_status, :set_default_status
+            after :build_links
           end
         end
 
@@ -127,11 +125,11 @@ module Pragma
       # @param resource [Object] an object responding to +#to_json+
       # @param headers [Hash] HTTP headers
       # @param links [Hash] links to use for building the +Link+ header
-      def respond_with(status: nil, resource: nil, headers: {}, links: {})
-        context.status = status
-        context.resource = resource
-        context.headers = headers.to_h
-        context.links = links
+      def respond_with(status: nil, resource: nil, headers: nil, links: nil)
+        context.status = status if status
+        context.resource = resource if resource
+        context.headers = headers if headers
+        context.links = links if links
       end
 
       # Same as {#respond_with}, but also halts the execution of the operation.
@@ -171,6 +169,24 @@ module Pragma
       # @return [Object]
       def current_user
         context.current_user
+      end
+
+      # Returns the headers we are responding with.
+      #
+      # This is just a shortcut for +context.headers+.
+      #
+      # @return [Hash]
+      def headers
+        context.headers
+      end
+
+      # Returns the links we are responding with.
+      #
+      # This is just a shotcut for +context.links+.
+      #
+      # @return [Hash]
+      def links
+        context.links
       end
 
       private
@@ -226,8 +242,8 @@ module Pragma
         context.fail!
       end
 
-      def build_link_header
-        return if context.headers['Link']
+      def build_links
+        headers.delete('Link')
 
         link_header = context.links.each_pair.select do |relation, url|
           url && !url.empty?
@@ -235,7 +251,7 @@ module Pragma
           %(<#{url}>; rel="#{relation}")
         end.join(",\n  ")
 
-        context.headers['Link'] = link_header unless link_header.empty?
+        headers['Link'] = link_header unless link_header.empty?
       end
     end
 
