@@ -245,7 +245,7 @@ module Pragma
       def build_links
         headers.delete('Link')
 
-        link_header = context.links.each_pair.select do |relation, url|
+        link_header = context.links.each_pair.select do |_relation, url|
           url && !url.empty?
         end.map do |relation, url|
           %(<#{url}>; rel="#{relation}")
