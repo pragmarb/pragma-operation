@@ -229,7 +229,9 @@ module Pragma
       def build_link_header
         return if context.headers['Link']
 
-        context.headers['Link'] = context.links.each_pair.map do |relation, url|
+        context.headers['Link'] = context.links.each_pair.select do |relation, url|
+          url && !url.empty?
+        end.map do |relation, url|
           %(<#{url}>; rel="#{relation}")
         end.join(",\n  ")
       end
