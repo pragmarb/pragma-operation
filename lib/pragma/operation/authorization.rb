@@ -69,6 +69,11 @@ module Pragma
             build_policy(authorizable)
           end
 
+          params.each_pair do |name, value|
+            next unless policy.resource.respond_to?("#{name}=")
+            policy.resource.send("#{name}=", value)
+          end
+
           policy.send("#{self.class.operation_name}?")
         end
 
