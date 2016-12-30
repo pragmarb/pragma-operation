@@ -63,7 +63,7 @@ module Pragma
         def authorize(authorizable)
           return true unless self.class.policy_klass
 
-          policy = if authorizable.is_a?(self.class.policy_klass)
+          policy = if self.class.policy_klass && authorizable.is_a?(self.class.policy_klass)
             authorizable
           else
             build_policy(authorizable)
