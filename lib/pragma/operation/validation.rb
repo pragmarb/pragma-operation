@@ -91,18 +91,41 @@ module Pragma
           end
           # rubocop:enable Metrics/LineLength
 
-          return if validate(contract)
+          respond_with_validation_errors!(contract) unless validate(contract)
+        end
 
-          respond_with!(
+        # Sets a response suitable for reporting validation errors.
+        #
+        # The response will be a 422 Unprocessable Entity, contain the +error_type+, +error_message+
+        # and +meta+ keys. +meta.errors+ will contain the validation errors.
+        #
+        # @param validatable [Object] a validatable object
+        def respond_with_validation_errors(validatable)
+          respond_with validation_errors_response(validatable)
+        end
+
+        # Same as {#respond_with_validation_errors}, but also halts the execution of the operation.
+        #
+        # @param validatable [Object] a validatable object
+        #
+        # @see #respond_with_validation_errors
+        def respond_with_validation_errors!(validatable)
+          respond_with! validation_errors_response(validatable)
+        end
+
+        private
+
+        def validation_errors_response(validatable)
+          {
             status: :unprocessable_entity,
             resource: {
               error_type: :contract_not_respected,
               error_message: 'The contract for this operation was not respected.',
               meta: {
-                errors: contract.errors.messages
+                errors: validatable.errors.messages
               }
             }
-          )
+          }
         end
       end
     end
