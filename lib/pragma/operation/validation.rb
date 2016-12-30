@@ -27,12 +27,15 @@ module Pragma
 
         # Builds the contract for the given resource, using the previous defined contract class.
         #
+        # If no contract has been defined for this operation, simply returns the resource.
+        #
         # @param resource [Object]
         #
         # @return [Pragma::Contract::Base]
         #
         # @see #contract
         def build_contract(resource)
+          return resource unless contract_klass
           contract_klass.new(resource)
         end
       end
@@ -55,6 +58,9 @@ module Pragma
 
         # Validates this operation on the provided contract or resource.
         #
+        # If no contract has been defined for this operation, tries to call +#validate+ on the
+        # resource. If the resource does not respond to +#validate+, returns true.
+        #
         # @param validatable [Object|Pragma::Contract::Base] contract or resource
         #
         # @return [Boolean] whether the operation is valid
@@ -66,7 +72,11 @@ module Pragma
           end
           # rubocop:enable Metrics/LineLength
 
-          contract.validate(params)
+          if contract.is_a?(Pragma::Contract::Base)
+            contract.validate(params)
+          else
+            contract.respond_to?(:validate) ? contract.validate : true
+          end
         end
 
         # Validates this operation on the provided contract or resource. If the operation is not
