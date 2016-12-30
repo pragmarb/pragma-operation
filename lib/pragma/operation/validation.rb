@@ -84,7 +84,6 @@ module Pragma
         #
         # @param validatable [Object|Pragma::Contract::Base] contract or resource
         def validate!(validatable)
-          # rubocop:disable Metrics/LineLength
           contract = if self.class.contract_klass && validatable.is_a?(self.class.contract_klass)
             validatable
           else
