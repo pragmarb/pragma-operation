@@ -35,6 +35,7 @@ module Pragma
         #
         # @see #decorator
         def build_decorator(resource)
+          resource = resource.to_a if resource.is_a?(Enumerable)
           decorator_klass.represent(resource)
         end
       end
