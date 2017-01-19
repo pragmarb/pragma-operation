@@ -18,6 +18,35 @@ RSpec.describe Pragma::Operation::Authorization do
     end
   end
 
+  describe '#policy with a block' do
+    let(:operation) do
+      Class.new(Pragma::Operation::Base) do
+        class << self
+          def name
+            'API::V1::Page::Operation::Create'
+          end
+        end
+
+        def call
+          resource = OpenStruct.new
+
+          respond_with status: :ok, resource: {
+            authorized: authorize(resource)
+          }
+        end
+      end.tap do |klass|
+        klass.send(:policy, &:policy_klass)
+      end
+    end
+
+    it 'computes the policy dynamically' do
+      expect(operation.call(
+        current_user: OpenStruct.new(admin?: true),
+        policy_klass: policy_klass
+      ).resource[:authorized]).to eq(true)
+    end
+  end
+
   describe '#authorize' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do

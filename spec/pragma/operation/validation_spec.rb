@@ -14,7 +14,28 @@ RSpec.describe Pragma::Operation::Validation do
     end
   end
 
-  describe '#authorize' do
+  describe '#contract with a block' do
+    let(:operation) do
+      Class.new(Pragma::Operation::Base) do
+        def call
+          respond_with status: :ok, resource: {
+            valid: validate(OpenStruct.new)
+          }
+        end
+      end.tap do |klass|
+        klass.send(:contract, &:contract_klass)
+      end
+    end
+
+    it 'computes the contract dynamically' do
+      expect(operation.call(
+        params: { pong: 'cia' },
+        contract_klass: contract_klass
+      ).resource[:valid]).to eq(true)
+    end
+  end
+
+  describe '#validate' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do
         def call

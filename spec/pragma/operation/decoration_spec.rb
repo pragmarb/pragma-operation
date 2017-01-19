@@ -10,6 +10,25 @@ RSpec.describe Pragma::Operation::Decoration do
     end
   end
 
+  describe '#decorator with a block' do
+    let(:operation) do
+      Class.new(Pragma::Operation::Base) do
+        def call
+          respond_with status: :ok, resource: decorate(OpenStruct.new(
+            title: 'Test',
+            foo: 'bar'
+          )).to_hash
+        end
+      end.tap do |klass|
+        klass.send(:decorator, &:decorator_klass)
+      end
+    end
+
+    it 'computes the decorator dynamically' do
+      expect(operation.call(decorator_klass: decorator_klass).resource).to eq('title' => 'Test')
+    end
+  end
+
   describe '#decorate' do
     let(:operation) do
       Class.new(Pragma::Operation::Base) do

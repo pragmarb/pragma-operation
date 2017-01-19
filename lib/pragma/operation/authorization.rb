@@ -14,8 +14,15 @@ module Pragma
         # Sets the policy to use for authorizing this operation.
         #
         # @param klass [Class] a subclass of +Pragma::Policy::Base+
-        def policy(klass)
-          @policy = klass
+        #
+        # @yield A block which will be called with the operation's context which should return
+        #   the policy class. The block can also return +nil+ if authorization should be skipped.
+        def policy(klass = nil, &block)
+          if !klass && !block_given?
+            fail ArgumentError, 'You must pass either a policy class or a block'
+          end
+
+          @policy = klass || block
         end
 
         # Returns the policy class.
@@ -23,19 +30,6 @@ module Pragma
         # @return [Class]
         def policy_klass
           @policy
-        end
-
-        # Builds the policy for the given user and resource, using the previous defined policy
-        # class.
-        #
-        # @param user [Object]
-        # @param resource [Object]
-        #
-        # @return [Pragma::Policy::Base]
-        #
-        # @see #policy
-        def build_policy(user:, resource:)
-          policy_klass.new(user: user, resource: resource)
         end
       end
 
@@ -50,7 +44,10 @@ module Pragma
         # @see .policy
         # @see .build_policy
         def build_policy(resource)
-          self.class.build_policy(user: current_user, resource: resource)
+          policy_klass = compute_policy_klass
+          return resource unless policy_klass
+
+          policy_klass.new(user: current_user, resource: resource)
         end
 
         # Authorizes this operation on the provided resource or policy.
@@ -61,13 +58,15 @@ module Pragma
         #
         # @return [Boolean] whether the operation is authorized
         def authorize(authorizable)
-          return true unless self.class.policy_klass
+          return true unless compute_policy_klass
 
-          policy = if self.class.policy_klass && authorizable.is_a?(self.class.policy_klass)
+          # rubocop:disable Metrics/LineLength
+          policy = if Object.const_defined?('Pragma::Policy::Base') && authorizable.is_a?(Pragma::Policy::Base)
             authorizable
           else
             build_policy(authorizable)
           end
+          # rubocop:enable Metrics/LineLength
 
           params.each_pair do |name, value|
             next unless policy.resource.respond_to?("#{name}=")
@@ -102,12 +101,21 @@ module Pragma
         #
         # @return [Pragma::Decorator::Base|Enumerable]
         def authorize_collection(collection)
-          return collection unless self.class.policy_klass
+          policy_klass = compute_policy_klass
+          return collection unless policy_klass
 
-          self.class.policy_klass.accessible_by(
+          policy_klass.accessible_by(
             user: current_user,
             scope: collection
           )
+        end
+
+        def compute_policy_klass
+          if self.class.policy_klass.is_a?(Proc)
+            self.class.policy_klass.call(context)
+          else
+            self.class.policy_klass
+          end
         end
       end
     end

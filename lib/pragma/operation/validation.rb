@@ -14,29 +14,22 @@ module Pragma
         # Sets the contract to use for validating this operation.
         #
         # @param klass [Class] a subclass of +Pragma::Contract::Base+
-        def contract(klass)
-          @contract = klass
+        #
+        # @yield A block which will be called with the operation's context which should return
+        #   the contract class. The block can also return +nil+ if validation should be skipped.
+        def contract(klass = nil, &block)
+          if !klass && !block_given?
+            fail ArgumentError, 'You must pass either a contract class or a block'
+          end
+
+          @contract = klass || block
         end
 
         # Returns the contract class.
         #
-        # @return [Class]
+        # @return [Class|Proc]
         def contract_klass
           @contract
-        end
-
-        # Builds the contract for the given resource, using the previous defined contract class.
-        #
-        # If no contract has been defined for this operation, simply returns the resource.
-        #
-        # @param resource [Object]
-        #
-        # @return [Pragma::Contract::Base]
-        #
-        # @see #contract
-        def build_contract(resource)
-          return resource unless contract_klass
-          contract_klass.new(resource)
         end
       end
 
@@ -51,9 +44,11 @@ module Pragma
         # @return [Pragma::Contract::Base]
         #
         # @see .contract
-        # @see .build_contract
         def build_contract(resource)
-          self.class.build_contract(resource)
+          contract_klass = compute_contract_klass(resource)
+          return resource unless contract_klass
+
+          contract_klass.new(resource)
         end
 
         # Validates this operation on the provided contract or resource.
@@ -65,7 +60,8 @@ module Pragma
         #
         # @return [Boolean] whether the operation is valid
         def validate(validatable)
-          contract = if self.class.contract_klass && validatable.is_a?(self.class.contract_klass)
+          # rubocop:disable Metrics/LineLength
+          contract = if Object.const_defined?('Pragma::Contract::Base') && validatable.is_a?(Pragma::Contract::Base)
             validatable
           else
             build_contract(validatable)
@@ -84,7 +80,8 @@ module Pragma
         #
         # @param validatable [Object|Pragma::Contract::Base] contract or resource
         def validate!(validatable)
-          contract = if self.class.contract_klass && validatable.is_a?(self.class.contract_klass)
+          # rubocop:disable Metrics/LineLength
+          contract = if Object.const_defined?('Pragma::Contract::Base') && validatable.is_a?(Pragma::Contract::Base)
             validatable
           else
             build_contract(validatable)
@@ -126,6 +123,14 @@ module Pragma
               }
             }
           }
+        end
+
+        def compute_contract_klass(_resource)
+          if self.class.contract_klass.is_a?(Proc)
+            self.class.contract_klass.call(context)
+          else
+            self.class.contract_klass
+          end
         end
       end
     end

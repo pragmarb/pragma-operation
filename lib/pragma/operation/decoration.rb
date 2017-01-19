@@ -11,11 +11,18 @@ module Pragma
       end
 
       module ClassMethods # :nodoc:
-        # Sets the decorator to use for validating this operation.
+        # Sets the decorator to use for decorating this operation.
         #
         # @param klass [Class] a subclass of +Pragma::Decorator::Base+
-        def decorator(klass)
-          @decorator = klass
+        #
+        # @yield A block which will be called with the operation's context which should return
+        #   the decorator class. The block can also return +nil+ if decoration should be skipped.
+        def decorator(klass = nil, &block)
+          if !klass && !block_given?
+            fail ArgumentError, 'You must pass either a decorator class or a block'
+          end
+
+          @decorator = klass || block
         end
 
         # Returns the decorator class.
@@ -23,20 +30,6 @@ module Pragma
         # @return [Class]
         def decorator_klass
           @decorator
-        end
-
-        # Builds the decorator for the given resource, using the previously defined decorator class.
-        #
-        # Works with both singular resources and collections.
-        #
-        # @param resource [Object]
-        #
-        # @return [Pragma::Decorator::Base]
-        #
-        # @see #decorator
-        def build_decorator(resource)
-          resource = resource.to_a if resource.is_a?(Enumerable)
-          decorator_klass.represent(resource)
         end
       end
 
@@ -52,7 +45,8 @@ module Pragma
         #
         # @see #decorate
         def build_decorator(resource)
-          self.class.build_decorator(resource)
+          resource = resource.to_a if resource.is_a?(Enumerable)
+          compute_decorator_klass.represent(resource)
         end
 
         # If a decorator is defined, acts as an alias for {#build_decorator}. If not, simply returns
@@ -63,8 +57,18 @@ module Pragma
         #
         # @see #build_decorator
         def decorate(decoratable)
-          return decoratable unless self.class.decorator_klass
+          return decoratable unless compute_decorator_klass
           build_decorator(decoratable)
+        end
+
+        private
+
+        def compute_decorator_klass
+          if self.class.decorator_klass.is_a?(Proc)
+            self.class.decorator_klass.call(context)
+          else
+            self.class.decorator_klass
+          end
         end
       end
     end
