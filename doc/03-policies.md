@@ -26,6 +26,29 @@ module API
 end
 ```
 
+You can also pass a block to compute the policy class dynamically. If the block returns `nil`,
+authorization will be skipped:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          policy do |context|
+            # ...
+          end
+
+          def call
+            # ...
+          end
+        end
+      end
+    end
+  end
+end
+```
+
 Of course, you will now have to pass the user performing the operation in addition to the usual
 parameters:
 

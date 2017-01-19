@@ -27,6 +27,29 @@ module API
 end
 ```
 
+You can also pass a block to compute the contract class dynamically. If the block returns `nil`,
+validation will be skipped:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          contract do |context|
+            # ...
+          end
+
+          def call
+            # ...
+          end
+        end
+      end
+    end
+  end
+end
+```
+
 If the contract passes validation, then all is good. If not, an error is raised:
 
 ```ruby
