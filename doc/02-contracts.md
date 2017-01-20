@@ -113,3 +113,42 @@ module API
   end
 end
 ```
+
+If you want to run some logic after validation, you can override the `#after_validation` method
+in your operation. It takes the result of the validation as its first argument:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          contract API::V1::Post::Contract::Create
+
+          def call
+            post = Post.new
+            contract = build_contract(post)
+
+            unless validate(contract)
+              respond_with!(
+                status: :unprocessable_entity,
+                resource: nil
+              )
+            end
+
+            contract.save
+
+            respond_with status: :created, resource: post
+          end
+
+          protected
+
+          def after_validation(result)
+            # ...
+          end
+        end
+      end
+    end
+  end
+end
+```

@@ -73,7 +73,9 @@ module Pragma
             policy.resource.send("#{name}=", value)
           end
 
-          policy.send("#{self.class.operation_name}?")
+          policy.send("#{self.class.operation_name}?").tap do |result|
+            after_authorization result
+          end
         end
 
         # Authorizes this operation on the provided resource or policy. If the user is not
@@ -91,6 +93,12 @@ module Pragma
               error_message: 'You are not authorized to perform this operation.'
             }
           )
+        end
+
+        # Runs after authorization is done.
+        #
+        # @param result [Boolean] the result of the authorization
+        def after_authorization(result)
         end
 
         # Scopes the provided collection.

@@ -72,6 +72,8 @@ module Pragma
             contract.validate(params)
           else
             contract.respond_to?(:validate) ? contract.validate : true
+          end.tap do |result|
+            after_validation(result)
           end
         end
 
@@ -89,6 +91,12 @@ module Pragma
           # rubocop:enable Metrics/LineLength
 
           respond_with_validation_errors!(contract) unless validate(contract)
+        end
+
+        # Runs after validation is done.
+        #
+        # @param result [Boolean] the result of the validation
+        def after_validation(result)
         end
 
         # Sets a response suitable for reporting validation errors.

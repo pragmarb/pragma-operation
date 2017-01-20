@@ -115,6 +115,44 @@ module API
 end
 ```
 
+If you want to run some logic after authorization, you can override the `#after_authorization` method
+in your operation. It takes the result of the authorization as its first argument:
+
+```ruby
+module API
+  module V1
+    module Post
+      module Operation
+        class Create < Pragma::Operation::Base
+          policy API::V1::Post::Policy
+
+          def call
+            post = Post.new(params)
+
+            unless authorize(post)
+              respond_with!(
+                status: :forbidden,
+                resource: nil # if you don't need error info
+              )
+            end
+
+            post.save!
+
+            respond_with status: :created, resource: post
+          end
+
+          protected
+
+          def after_authorization(result)
+            # ...
+          end
+        end
+      end
+    end
+  end
+end
+```
+
 ## Authorizing collections
 
 To authorize a collection, use `#authorize_collection`. This will call `.accessible_by` on the
