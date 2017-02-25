@@ -7,8 +7,6 @@ module Pragma
     #
     # @abstract Subclass and override {#call} to implement an operation.
     class Base < Trailblazer::Operation
-      step :process!
-
       class << self
         # Returns the name of this operation.
         #
@@ -24,11 +22,6 @@ module Pragma
             .downcase
             .to_sym
         end
-      end
-
-      # Runs the operation.
-      def process!
-        fail NotImplementedError
       end
     end
   end
