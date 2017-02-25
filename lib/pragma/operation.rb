@@ -1,10 +1,5 @@
 # frozen_string_literal: true
-require 'interactor'
-
 require 'pragma/operation/version'
-require 'pragma/operation/authorization'
-require 'pragma/operation/validation'
-require 'pragma/operation/decoration'
 require 'pragma/operation/base'
 
 module Pragma
