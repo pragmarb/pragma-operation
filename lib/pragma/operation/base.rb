@@ -4,8 +4,6 @@ module Pragma
     # This is the base class all your operations should extend.
     #
     # @author Alessandro Desantis
-    #
-    # @abstract Subclass and override {#call} to implement an operation.
     class Base < Trailblazer::Operation
       class << self
         # Returns the name of this operation.
