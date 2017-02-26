@@ -1,8 +1,9 @@
 # frozen_string_literal: true
-require 'trailblazer'
+require 'trailblazer/operation'
 
 require 'pragma/operation/version'
 require 'pragma/operation/base'
+require 'pragma/operation/response'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.

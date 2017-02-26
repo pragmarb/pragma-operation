@@ -23,6 +23,12 @@ module Pragma
             .to_sym
         end
       end
+
+      step :response!
+
+      def response!(options)
+        options['result.response'] = Response.new
+      end
     end
   end
 end
