@@ -3,15 +3,15 @@ RSpec.describe Pragma::Operation::Base do
   subject(:result) do
     operation_klass.call(
       { foo: 'bar' },
-      'current_user_id' => 1
+      { 'current_user_id' => 1 }
     )
   end
 
   let(:operation_klass) do
     Class.new(described_class) do
-      step :process
+      step :process!
 
-      def process(options)
+      def process!(_options)
         true
       end
     end
