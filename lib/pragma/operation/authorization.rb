@@ -70,11 +70,6 @@ module Pragma
 
           if Object.const_defined?('Pragma::Contract::Base') && authorizable.is_a?(Pragma::Contract::Base)
             authorizable.deserialize(params)
-          else
-            params.each_pair do |name, value|
-              next unless policy.resource.respond_to?("#{name}=")
-              policy.resource.send("#{name}=", value)
-            end
           end
 
           policy.send("#{self.class.operation_name}?").tap do |result|
