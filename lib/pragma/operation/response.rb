@@ -90,6 +90,12 @@ module Pragma
           @status = STATUSES.invert[v.to_sym]
         end
       end
+
+      def decorate_with(decorator)
+        tap do
+          self.entity = decorator.represent(entity)
+        end
+      end
     end
   end
 end
