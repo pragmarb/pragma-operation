@@ -21,8 +21,4 @@ RSpec.describe Pragma::Operation::Base do
   it 'runs correctly' do
     expect(result).to be_success
   end
-
-  it 'sets up a default response' do
-    expect(result['result.response']).to be_instance_of(Pragma::Operation::Response)
-  end
 end
