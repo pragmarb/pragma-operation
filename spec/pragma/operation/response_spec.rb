@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 RSpec.describe Pragma::Operation::Response do
   subject { described_class.new }
 

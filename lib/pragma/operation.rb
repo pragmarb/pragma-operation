@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'trailblazer/operation'
 
 require 'pragma/operation/version'

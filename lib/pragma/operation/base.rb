@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Pragma
   module Operation
     # This is the base class all your operations should extend.
