@@ -4,7 +4,7 @@ module Pragma
   module Operation
     class Response
       class UnprocessableEntity < Response
-        def initialize(status: 422, entity: nil, headers: {}, errors: nil)
+        def initialize(entity: nil, headers: {}, errors: nil)
           fail ArgumentError, 'You cannot provide both :entity and :errors!' if entity && errors
 
           entity ||= {
@@ -15,11 +15,7 @@ module Pragma
             }
           }
 
-          super(
-            status: status,
-            entity: entity,
-            headers: headers
-          )
+          super(status: 422, entity: entity, headers: headers)
         end
       end
     end

@@ -4,8 +4,8 @@ module Pragma
   module Operation
     class Response
       class Ok < Response
-        def initialize(status: 200, entity: nil, headers: {})
-          super(status: status, entity: entity, headers: headers)
+        def initialize(entity: nil, headers: {})
+          super(status: 200, entity: entity, headers: headers)
         end
       end
     end
