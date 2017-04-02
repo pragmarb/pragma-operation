@@ -11,6 +11,7 @@ require 'pragma/operation/response/forbidden'
 require 'pragma/operation/response/unprocessable_entity'
 require 'pragma/operation/response/created'
 require 'pragma/operation/response/ok'
+require 'pragma/operation/response/no_content'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.
