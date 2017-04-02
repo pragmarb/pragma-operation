@@ -3,7 +3,7 @@
 module Pragma
   module Operation
     class Response
-      class UnprocessableEntity < Response
+      class NoContent < Response
         def initialize(headers: {})
           super(status: 204, entity: nil, headers: headers)
         end
