@@ -5,10 +5,10 @@ module Pragma
     class Response
       class NotFound < Response
         def initialize(
-          entity: {
+          entity: Error.new(
             error_type: :not_found,
             error_message: 'The requested resource could not be found.'
-          },
+          ),
           headers: {}
         )
           super(status: 404, entity: entity, headers: headers)

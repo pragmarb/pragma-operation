@@ -5,10 +5,10 @@ module Pragma
     class Response
       class Forbidden < Response
         def initialize(
-          entity: {
+          entity: Error.new(
             error_type: :forbidden,
             error_message: 'You are not authorized to access the requested resource.'
-          },
+          ),
           headers: {}
         )
           super(status: 403, entity: entity, headers: headers)

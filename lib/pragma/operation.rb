@@ -4,6 +4,7 @@ require 'trailblazer/operation'
 
 require 'pragma/operation/version'
 require 'pragma/operation/base'
+require 'pragma/operation/error'
 
 require 'pragma/operation/response'
 require 'pragma/operation/response/not_found'
@@ -12,6 +13,7 @@ require 'pragma/operation/response/unprocessable_entity'
 require 'pragma/operation/response/created'
 require 'pragma/operation/response/ok'
 require 'pragma/operation/response/no_content'
+
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.

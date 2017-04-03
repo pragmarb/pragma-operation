@@ -7,13 +7,13 @@ module Pragma
         def initialize(entity: nil, headers: {}, errors: nil)
           fail ArgumentError, 'You cannot provide both :entity and :errors!' if entity && errors
 
-          entity ||= {
+          entity ||= Error.new(
             error_type: :unprocessable_entity,
             error_message: 'The provided resource is in an unexpected format.',
             meta: {
               errors: errors || {}
             }
-          }
+          )
 
           super(status: 422, entity: entity, headers: headers)
         end
