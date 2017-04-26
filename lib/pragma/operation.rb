@@ -7,6 +7,7 @@ require 'pragma/operation/base'
 require 'pragma/operation/error'
 
 require 'pragma/operation/response'
+require 'pragma/operation/response/bad_request'
 require 'pragma/operation/response/not_found'
 require 'pragma/operation/response/forbidden'
 require 'pragma/operation/response/unprocessable_entity'
