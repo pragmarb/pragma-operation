@@ -74,7 +74,7 @@ module Pragma
       end
 
       def success?
-        %w(1 2 3).include?(@status.to_s[0])
+        %w[1 2 3].include?(@status.to_s[0])
       end
 
       def failure?
