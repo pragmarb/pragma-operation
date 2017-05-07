@@ -1,11 +1,19 @@
 # frozen_string_literal: true
-require 'interactor'
+
+require 'trailblazer/operation'
 
 require 'pragma/operation/version'
-require 'pragma/operation/authorization'
-require 'pragma/operation/validation'
-require 'pragma/operation/decoration'
 require 'pragma/operation/base'
+require 'pragma/operation/error'
+
+require 'pragma/operation/response'
+require 'pragma/operation/response/bad_request'
+require 'pragma/operation/response/not_found'
+require 'pragma/operation/response/forbidden'
+require 'pragma/operation/response/unprocessable_entity'
+require 'pragma/operation/response/created'
+require 'pragma/operation/response/ok'
+require 'pragma/operation/response/no_content'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.
