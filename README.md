@@ -7,7 +7,7 @@
 
 Operations encapsulate the business logic of your JSON API.
 
-They are built on top [Trailblazer::Operation](https://github.com/trailblazer/trailblazer-operation).
+They are built on top of the [Trailblazer::Operation](https://github.com/trailblazer/trailblazer-operation) gem.
 
 ## Installation
 
