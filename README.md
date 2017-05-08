@@ -7,7 +7,7 @@
 
 Operations encapsulate the business logic of your JSON API.
 
-They are built on top of the awesome [Interactor](https://github.com/collectiveidea/interactor) gem.
+They are built on top [Trailblazer::Operation](https://github.com/trailblazer/trailblazer-operation).
 
 ## Installation
 
@@ -31,8 +31,7 @@ $ gem install pragma-operation
 
 ## Usage
 
-All documentation is in the [doc](https://github.com/pragmarb/pragma-operation/tree/master/doc)
-folder.
+...
 
 ## Contributing
 
