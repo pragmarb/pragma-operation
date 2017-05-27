@@ -239,7 +239,7 @@ module Pragma
 
       def mark_result
         return if /\A(2|3)\d{2}\z/ =~ STATUSES.invert[context.status].to_s
-        context.fail!
+        context.fail! pragma_operation_failure: true
       end
 
       def build_links
