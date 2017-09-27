@@ -62,7 +62,7 @@ module API
           options['result.response'] = Pragma::Operation::Response::Forbidden.new(
             entity: Error.new(
               error_type: :forbidden,
-              error_message: 'You can only access an article if it published or authored by you.'
+              error_message: 'You can only access an article if published or authored by you.'
             )
           )
         end
