@@ -59,10 +59,12 @@ module API
         end
 
         def handle_unauthorized!(options)
-          options['result.response'] = Pragma::Operation::Response::Forbidden.new(entity: Error.new(
-            error_type: :forbidden,
-            error_message: 'You can only access an article if it published or authored by you.'
-          ))
+          options['result.response'] = Pragma::Operation::Response::Forbidden.new(
+            entity: Error.new(
+              error_type: :forbidden,
+              error_message: 'You can only access an article if it published or authored by you.'
+            )
+          )
         end
   
         def respond!(options)
@@ -122,7 +124,7 @@ response.entity = {
 }
 ```
 
-### Decorating entities
+### Decorating entities
 
 The response class also has support for Pragma [decorators](https://github.com/pragmarb/pragma-decorator)
 
