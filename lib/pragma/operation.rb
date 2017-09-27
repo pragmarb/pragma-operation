@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'json'
+
 require 'trailblazer/operation'
 
 require 'pragma/operation/version'
