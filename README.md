@@ -31,7 +31,111 @@ $ gem install pragma-operation
 
 ## Usage
 
-...
+Let's build your first operation!
+
+```ruby
+module API
+  module V1
+    module Article
+      class Show < Pragma::Operation::Base
+        step :find!
+        failure :handle_not_found!, fail_fast: true
+        step :authorize!
+        failure :handle_unauthorized!
+        step :respond!
+
+        def find!(params:, **options)
+          options['model'] = ::Article.find_by(id: params[:id])
+        end
+
+        def handle_not_found!(options)
+          options['result.response'] = Pragma::Operation::Response::NotFound.new
+          false
+        end
+
+        def authorize!(options)
+          options['result.authorization'] = options['model'].published? || 
+            options['model'].author == options['current_user']
+        end
+
+        def handle_unauthorized!(options)
+          options['result.response'] = Pragma::Operation::Response::Forbidden.new(entity: Error.new(
+            error_type: :forbidden,
+            error_message: 'You can only access an article if it published or authored by you.'
+          ))
+        end
+  
+        def respond!(options)
+          options['result.response'] = Pragma::Operation::Response::Ok.new(
+            entity: options['model'].as_json
+          )
+        end
+      end
+    end
+  end
+end
+```
+
+Yes, I know. This does not make any sense yet. Before continuing, I encourage you to read (and
+understand!) the documentation of [Trailblazer::Operation](http://trailblazer.to/gems/operation/2.0/index.html).
+Pragma::Operation is simply an extension of its TRB counterpart. For the rest of this guide, we will
+assume you have a good understanding of TRB concepts like flow control and macros.
+
+### Response basics
+
+The only requirement for a Pragma operation is that it sets a `result.response` key in the options
+hash by the end of its execution. This is a `Pragma::Operation::Response` object that will be used
+by [pragma-rails](https://github.com/pragmarb/pragma-rails) or another integration to respond with
+the proper HTTP information.
+
+Responses have, just as you'd expect, a status, headers and body. You can manipulate them by using
+the `status`, `headers` and `entity` parameters of the initializer:
+
+```ruby
+response = Pragma::Operation::Response.new(
+  status: 201,
+  headers: {
+    'X-Api-Custom' => 'Value'
+  },
+  entity: my_model
+)
+```
+
+You can also set these properties through their accessors after instantiating the response:
+
+```ruby
+# You can set the status as a symbol:
+response.status = :created
+
+# You can set it as an HTTP status code:
+response.status = 201
+
+# You can manipulate headers:
+response.headers['X-Api-Custom'] = 'Value'
+
+# You can manipulate the entity:
+response.entity = my_model
+
+# The entity can be any object responding to #to_json:
+response.entity = {
+  foo: :bar
+}
+```
+
+### Decorating entities
+
+The response class also has support for Pragma [decorators](https://github.com/pragmarb/pragma-decorator)
+
+If you use decorators, you can set a decorator as the entity or you can use the `#decorate_with`
+convenience method to decorate the existing entity:
+
+```ruby
+response.entity = ArticleDecorator.new(article)
+
+# This is equivalent to the above:
+response.entity = article
+response.decorate_with(ArticleDecorator) # => returns the response itself for chaining
+```
 
 ## Contributing
 
