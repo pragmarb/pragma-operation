@@ -136,7 +136,7 @@ response.entity = ArticleDecorator.new(article)
 
 # This is equivalent to the above:
 response.entity = article
-response.decorate_with(ArticleDecorator) # => returns the response itself for chaining
+response.decorate_with(ArticleDecorator) # returns the response itself for chaining
 ```
 
 ### Errors
@@ -151,11 +151,11 @@ error = Pragma::Operation::Error.new(
   error_message: 'You have specified an invalid date in your request.'
 )
 
-error.as_json # {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{}}
-error.to_json # {"error_type":"invalid_date","error_message":"You have specified an invalid date in your request.","meta":{}} 
+error.as_json # => {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{}}
+error.to_json # => {"error_type":"invalid_date","error_message":"You have specified an invalid date in your request.","meta":{}} 
 ```
 
-Did you see that `meta` property in the JSON representation of the error? You can use it to include
+Do you see that `meta` property in the JSON representation of the error? You can use it to include
 additional metadata about the error. This is especially useful, for instance, with validation errors
 as you can include the exact fields and validation messages (which is exactly what Pragma does by
 default, by the way):
@@ -169,8 +169,31 @@ error = Pragma::Operation::Error.new(
   }
 )
 
-error.as_json # {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{:expected_format=>"YYYY-MM-DD"}}
+error.as_json # => {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{:expected_format=>"YYYY-MM-DD"}}
+error.to_json # => {"error_type":"invalid_date","error_message":"You have specified an invalid date in your request.","meta":{"expected_format":"YYYY-MM-DD"}}
 ```
+
+If you don't want to go with this format, you are free to implement your own error class, but it is
+not recommended, as the [built-in macros](https://github.com/pragmarb/pragma/tree/master/lib/pragma/operation/macro) 
+will use `Pragma::Operation::Error`.
+
+### Built-in responses
+
+Last but not least, as you have seen in the example operation, Pragma provides some 
+[built-in responses](https://github.com/pragmarb/pragma-operation/tree/master/lib/pragma/operation/response) 
+for common status codes and bodies. Some of these only have a status code while others (the error
+responses) also have a default entity attached to them. For instance, you can use `Pragma::Operation::Response::Forbidden`
+without specifying your own error type and message:
+
+```ruby
+response = Pragma::Operation::Response::Forbidden.new
+
+response.status # => 403
+response.entity.to_json # => {"error_type":"forbidden","error_message":"You are not authorized to access the requested resource.","meta":{}}
+```
+
+The built-in responses are not meant to be comprehensive and you will most likely have to implement
+your own. If you write some that you think could be useful, feel free to open a PR!
 
 ## Contributing
 
