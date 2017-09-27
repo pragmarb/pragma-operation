@@ -126,7 +126,7 @@ response.entity = {
 
 ### Decorating entities
 
-The response class also has support for Pragma [decorators](https://github.com/pragmarb/pragma-decorator)
+The response class also has support for Pragma [decorators](https://github.com/pragmarb/pragma-decorator).
 
 If you use decorators, you can set a decorator as the entity or you can use the `#decorate_with`
 convenience method to decorate the existing entity:
