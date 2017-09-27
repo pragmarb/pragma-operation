@@ -139,6 +139,39 @@ response.entity = article
 response.decorate_with(ArticleDecorator) # => returns the response itself for chaining
 ```
 
+### Errors
+
+Pragma::Operation ships with an `Error` data structure that's simply the recommended way to present
+your errors. You can build your custom error by creating a new instance of it and specify a 
+machine-readable error type and a human-readable error message:
+
+```ruby
+error = Pragma::Operation::Error.new(
+  error_type: :invalid_date,
+  error_message: 'You have specified an invalid date in your request.'
+)
+
+error.as_json # {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{}}
+error.to_json # {"error_type":"invalid_date","error_message":"You have specified an invalid date in your request.","meta":{}} 
+```
+
+Did you see that `meta` property in the JSON representation of the error? You can use it to include
+additional metadata about the error. This is especially useful, for instance, with validation errors
+as you can include the exact fields and validation messages (which is exactly what Pragma does by
+default, by the way):
+
+```ruby
+error = Pragma::Operation::Error.new(
+  error_type: :invalid_date,
+  error_message: 'You have specified an invalid date in your request.',
+  meta: {
+    expected_format: 'YYYY-MM-DD'
+  }
+)
+
+error.as_json # {:error_type=>:invalid_date, :error_message=>"You have specified an invalid date in your request.", :meta=>{:expected_format=>"YYYY-MM-DD"}}
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/pragmarb/pragma-operation.
