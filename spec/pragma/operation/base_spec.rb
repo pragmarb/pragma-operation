@@ -12,7 +12,7 @@ RSpec.describe Pragma::Operation::Base do
     Class.new(described_class) do
       step :process!
 
-      def process!(_options)
+      def process!(_options, **)
         true
       end
     end
