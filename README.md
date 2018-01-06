@@ -1,9 +1,9 @@
 # Pragma::Operation
 
-[![Build Status](https://img.shields.io/travis/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://travis-ci.org/pragmarb/pragma-operation)
-[![Dependency Status](https://img.shields.io/gemnasium/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://gemnasium.com/github.com/pragmarb/pragma-operation)
-[![Code Climate](https://img.shields.io/codeclimate/github/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://codeclimate.com/github/pragmarb/pragma-operation)
-[![Coveralls](https://img.shields.io/coveralls/pragmarb/pragma-operation.svg?maxAge=3600&style=flat-square)](https://coveralls.io/github/pragmarb/pragma-operation)
+[![Build Status](https://travis-ci.org/pragmarb/pragma-operation.svg?branch=master)](https://travis-ci.org/pragmarb/pragma-operation)
+[![Dependency Status](https://gemnasium.com/badges/github.com/pragmarb/pragma-operation.svg)](https://gemnasium.com/github.com/pragmarb/pragma-operation)
+[![Coverage Status](https://coveralls.io/repos/github/pragmarb/pragma-operation/badge.svg?branch=master)](https://coveralls.io/github/pragmarb/pragma-operation?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e51e8d7489eb72ab97ba/maintainability)](https://codeclimate.com/github/pragmarb/pragma-operation/maintainability)
 
 Operations encapsulate the business logic of your JSON API.
 
