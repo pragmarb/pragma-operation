@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `Unauthorized` response template
 - Added `ServiceUnavailable` response template
 
+### Fixed
+
+- Fixed `Pragma::Operation::Error#as_json` having the wrong arity
+
 ## [2.0.0]
 
 First Pragma 2 release.

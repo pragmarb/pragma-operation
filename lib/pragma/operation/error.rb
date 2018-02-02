@@ -11,7 +11,7 @@ module Pragma
         @meta = meta
       end
 
-      def as_json
+      def as_json(*)
         {
           error_type: error_type,
           error_message: error_message,
