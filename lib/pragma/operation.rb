@@ -18,6 +18,7 @@ require 'pragma/operation/response/ok'
 require 'pragma/operation/response/no_content'
 require 'pragma/operation/response/unauthorized'
 require 'pragma/operation/response/service_unavailable'
+require 'pragma/operation/response/internal_server_error'
 
 module Pragma
   # Operations provide business logic encapsulation for your JSON API.
