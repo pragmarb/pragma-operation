@@ -2,6 +2,7 @@
 
 module Pragma
   module Operation
+    # Represents an HTTP response. Provides utilities to deal with status codes and such.
     class Response
       STATUSES = {
         100 => :continue,
@@ -64,23 +65,49 @@ module Pragma
         511 => :network_authentication_required
       }.freeze
 
+      # @!attribute [rw] entity
+      #   @return [Object] the entity/body of the response
+      #
+      # @!attribute [rw] headers
+      #   @return [Hash] the headers of the response
       attr_accessor :entity, :headers
+
+      # @!attribute [r] status
+      #   @return [Integer|Symbol] the HTTP status code of the response
       attr_reader :status
 
+      # Initializes the response.
+      #
+      # @param status [Integer|Symbol] the HTTP status code of the response
+      # @param entity [Object] the entity/body of the response
+      # @param headers [Hash] the headers of the response
       def initialize(status: 200, entity: nil, headers: {})
         self.status = status
         self.entity = entity
         self.headers = headers
       end
 
+      # Returns whether the response has a successful HTTP status code, by checking whether the
+      # status code is 1xx, 2xx or 3xx.
+      #
+      # @return [Boolean]
       def success?
         %w[1 2 3].include?(@status.to_s[0])
       end
 
+      # Returns whether the response has a failed HTTP status code, by checking whether the status
+      # code is 4xx or 5xx.
+      #
+      # @return [Boolean]
       def failure?
         !success?
       end
 
+      # Sets the HTTP status code of the response.
+      #
+      # @param v [Symbol|Integer] the status code (e.g. +200+/+:ok+)
+      #
+      # @raise [ArgumentError] if an invalid status code is provided
       def status=(v)
         case v
         when Integer
@@ -89,9 +116,19 @@ module Pragma
         when Symbol, String
           fail ArgumentError, "#{v} is not a valid status phrase" unless STATUSES.invert[v.to_sym]
           @status = STATUSES.invert[v.to_sym]
+        else
+          fail ArgumentError, "#status= expects an integer or a symbol, #{v} provided"
         end
       end
 
+      # Applies a decorator to the response's entity.
+      #
+      # @param decorator [Class] the decorator to apply
+      #
+      # @return [Response] returns itself for chaining
+      #
+      # @example Applying a decorator
+      #   response = Pragma::Operation::Response::Ok.new(entity: user).decorate_with(UserDecorator)
       def decorate_with(decorator)
         tap do
           self.entity = decorator.represent(entity)

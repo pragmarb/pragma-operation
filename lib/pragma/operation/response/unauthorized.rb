@@ -3,7 +3,12 @@
 module Pragma
   module Operation
     class Response
+      # Represents the 401 Unauthorized HTTP response.
       class Unauthorized < Response
+        # Initializes the response.
+        #
+        # @param entity [Object] the response's entity
+        # @param headers [Hash] the response's headers
         def initialize(
           entity: Error.new(
             error_type: :unauthorized,

@@ -3,6 +3,7 @@
 module Pragma
   module Operation
     class Response
+      # Represents the 409 Conflict HTTP response.
       class Conflict < Response
         def initialize(
           entity: Error.new(
