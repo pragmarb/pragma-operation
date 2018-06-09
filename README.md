@@ -1,7 +1,6 @@
 # Pragma::Operation
 
 [![Build Status](https://travis-ci.org/pragmarb/pragma-operation.svg?branch=master)](https://travis-ci.org/pragmarb/pragma-operation)
-[![Dependency Status](https://gemnasium.com/badges/github.com/pragmarb/pragma-operation.svg)](https://gemnasium.com/github.com/pragmarb/pragma-operation)
 [![Coverage Status](https://coveralls.io/repos/github/pragmarb/pragma-operation/badge.svg?branch=master)](https://coveralls.io/github/pragmarb/pragma-operation?branch=master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e51e8d7489eb72ab97ba/maintainability)](https://codeclimate.com/github/pragmarb/pragma-operation/maintainability)
 
