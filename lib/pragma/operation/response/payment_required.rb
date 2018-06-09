@@ -7,7 +7,7 @@ module Pragma
         def initialize(
           entity: Error.new(
             error_type: :payment_required,
-            error_message: 'This resource requires payment.',
+            error_message: 'This resource requires payment.'
           ),
           headers: {}
         )

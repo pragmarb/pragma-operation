@@ -7,7 +7,7 @@ module Pragma
         def initialize(
           entity: Error.new(
             error_type: :internal_server_error,
-            error_message: 'There was an error processing your request.',
+            error_message: 'There was an error processing your request.'
           ),
           headers: {}
         )

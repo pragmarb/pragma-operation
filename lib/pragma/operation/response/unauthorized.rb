@@ -7,7 +7,7 @@ module Pragma
         def initialize(
           entity: Error.new(
             error_type: :unauthorized,
-            error_message: 'This resource requires authentication.',
+            error_message: 'This resource requires authentication.'
           ),
           headers: {}
         )

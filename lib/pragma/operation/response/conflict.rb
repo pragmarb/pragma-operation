@@ -7,7 +7,7 @@ module Pragma
         def initialize(
           entity: Error.new(
             error_type: :conflict,
-            error_message: 'Your request is in conflict with other content on this server.',
+            error_message: 'Your request is in conflict with other content on this server.'
           ),
           headers: {}
         )
