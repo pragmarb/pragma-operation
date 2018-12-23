@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Implemented `#respond` and `#error` helpers
+
 ## [2.2.0]
 
 ### Added
