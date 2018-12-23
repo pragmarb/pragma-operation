@@ -105,19 +105,22 @@ module Pragma
 
       # Sets the HTTP status code of the response.
       #
-      # @param v [Symbol|Integer] the status code (e.g. +200+/+:ok+)
+      # @param value [Symbol|Integer] the status code (e.g. +200+/+:ok+)
       #
       # @raise [ArgumentError] if an invalid status code is provided
-      def status=(v)
-        case v
+      def status=(value)
+        case value
         when Integer
-          fail ArgumentError, "#{v} is not a valid status code" unless STATUSES[v]
-          @status = v
+          fail ArgumentError, "#{value} is not a valid status code" unless STATUSES[value]
+          @status = value
         when Symbol, String
-          fail ArgumentError, "#{v} is not a valid status phrase" unless STATUSES.invert[v.to_sym]
-          @status = STATUSES.invert[v.to_sym]
+          unless STATUSES.invert[value.to_sym]
+            fail ArgumentError, "#{value} is not a valid status phrase"
+          end
+
+          @status = STATUSES.invert[value.to_sym]
         else
-          fail ArgumentError, "#status= expects an integer or a symbol, #{v} provided"
+          fail ArgumentError, "#status= expects an integer or a symbol, #{value} provided"
         end
       end
 
