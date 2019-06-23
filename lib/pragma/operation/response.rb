@@ -112,6 +112,7 @@ module Pragma
         case value
         when Integer
           fail ArgumentError, "#{value} is not a valid status code" unless STATUSES[value]
+
           @status = value
         when Symbol, String
           unless STATUSES.invert[value.to_sym]

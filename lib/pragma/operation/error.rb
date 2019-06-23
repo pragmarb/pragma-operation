@@ -43,7 +43,7 @@ module Pragma
       # @return [String]
       #
       # @see #as_json
-      def to_json
+      def to_json(*_args)
         JSON.dump as_json
       end
     end
